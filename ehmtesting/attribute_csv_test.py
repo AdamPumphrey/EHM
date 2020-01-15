@@ -33,8 +33,15 @@ def parse_data(file):
         # delete blank pair at end
         del row['']
         playerdata.append(row)
-        print(row)
     for item in playerdata[0]:
         print(item, playerdata[0][item])
 
     csvfile.close()
+
+
+def main():
+    parse_data(filename)
+
+
+if __name__ == '__main__':
+    main()
