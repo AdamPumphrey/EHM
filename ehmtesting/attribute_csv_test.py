@@ -5,31 +5,36 @@
 import csv
 
 filename = 'testplayers.csv'
-csvfile = open(filename, 'r')
-data = csvfile.readlines()
-print(data)
 
-data[0] = data[0][:15] + 'Team Rights' + data[0][30:]
-print(data[0])
 
-data[0] = data[0][:27] + 'Position(s)' + data[0][42:]
-print(data[0])
+def format_file(file):
+    tempfile = open(file, 'r')
+    tempdata = tempfile.readlines()
+    print(tempdata)
 
-print(data)
-csvfile.close()
-csvfile = open(filename, 'w')
-csvfile.writelines(data)
-csvfile.close()
+    tempdata[0] = tempdata[0][:15] + 'Team Rights' + tempdata[0][30:]
+    print(tempdata[0])
 
-csvfile = open(filename)
-players = csv.DictReader(csvfile, delimiter=';')
-playerdata = []
-for row in players:
-    # delete blank pair at end
-    del row['']
-    playerdata.append(row)
-    print(row)
-for item in playerdata[0]:
-    print(item, playerdata[0][item])
+    tempdata[0] = tempdata[0][:27] + 'Position(s)' + tempdata[0][42:]
+    print(tempdata[0])
 
-csvfile.close()
+    print(tempdata)
+    tempfile.close()
+    tempfile = open(file, 'w')
+    tempfile.writelines(tempdata)
+    tempfile.close()
+
+
+def parse_data(file):
+    csvfile = open(file)
+    players = csv.DictReader(csvfile, delimiter=';')
+    playerdata = []
+    for row in players:
+        # delete blank pair at end
+        del row['']
+        playerdata.append(row)
+        print(row)
+    for item in playerdata[0]:
+        print(item, playerdata[0][item])
+
+    csvfile.close()
