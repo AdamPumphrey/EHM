@@ -6,26 +6,38 @@ import csv
 
 filename = 'testplayers.csv'
 newfile = 'playeratt_import.csv'
+year = '2020;'
 
 
 def format_file(file):
     tempfile = open(file, 'r')
     tempdata = tempfile.readlines()
-    print(tempdata)
 
     tempdata[0] = tempdata[0][:15] + 'Team' + tempdata[0][27:]
-    print(tempdata[0])
 
     tempdata[0] = tempdata[0][:20] + 'League' + tempdata[0][36:]
-    print(tempdata[0])
 
     tempdata[0] = tempdata[0][:27] + 'Team Rights' + tempdata[0][42:]
-    print(tempdata[0])
 
     tempdata[0] = tempdata[0][:39] + 'Position(s)' + tempdata[0][54:]
-    print(tempdata[0])
+
+    tempdata[0] = tempdata[0][:51] + 'Year;' + tempdata[0][51:]
 
     print(tempdata)
+
+    for i in range(len(tempdata)):
+        if i == 0:
+            pass
+        else:
+            count = 0
+            for x in range(len(tempdata[i])):
+                if tempdata[i][x] == ';':
+                    count += 1
+                if count == 7:
+                    tempdata[i] = tempdata[i][:x + 1] + year + tempdata[i][x + 1:]
+                    print(tempdata[i])
+                    break
+
     tempfile.close()
     tempfile = open(newfile, 'w')
     tempfile.writelines(tempdata)
