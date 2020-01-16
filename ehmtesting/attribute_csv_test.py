@@ -5,6 +5,7 @@
 import csv
 
 filename = 'testplayers.csv'
+newfile = 'playeratt_import.csv'
 
 
 def format_file(file):
@@ -26,7 +27,7 @@ def format_file(file):
 
     print(tempdata)
     tempfile.close()
-    tempfile = open(file, 'w')
+    tempfile = open(newfile, 'w')
     tempfile.writelines(tempdata)
     tempfile.close()
 
@@ -60,7 +61,8 @@ def parse_data(file):
 
 
 def main():
-    parse_data(filename)
+    format_file(filename)
+    parse_data(newfile)
 
 
 if __name__ == '__main__':
