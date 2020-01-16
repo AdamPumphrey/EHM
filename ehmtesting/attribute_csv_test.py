@@ -12,10 +12,16 @@ def format_file(file):
     tempdata = tempfile.readlines()
     print(tempdata)
 
-    tempdata[0] = tempdata[0][:15] + 'Team Rights' + tempdata[0][30:]
+    tempdata[0] = tempdata[0][:15] + 'Team' + tempdata[0][27:]
     print(tempdata[0])
 
-    tempdata[0] = tempdata[0][:27] + 'Position(s)' + tempdata[0][42:]
+    tempdata[0] = tempdata[0][:20] + 'League' + tempdata[0][36:]
+    print(tempdata[0])
+
+    tempdata[0] = tempdata[0][:27] + 'Team Rights' + tempdata[0][42:]
+    print(tempdata[0])
+
+    tempdata[0] = tempdata[0][:39] + 'Position(s)' + tempdata[0][54:]
     print(tempdata[0])
 
     print(tempdata)
