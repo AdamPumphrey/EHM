@@ -30,6 +30,8 @@ def main():
     data = stats.readlines()
     stats.close()
 
+    # TODO: extract and insert year field for each stat row
+
     del data[0:4]
     regseason_skaterdata = [data[0]]
     data.append(data[0])
