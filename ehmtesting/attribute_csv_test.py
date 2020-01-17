@@ -64,7 +64,7 @@ def parse_data(file):
     Function creates a csv dictionary, formats each row correctly, and appends each row of the dictionary
     to a list for importing.
     :param file: string, the filename (playeratt_import.csv)
-    :return:
+    :return: playerdata (list)
     """
     csvfile = open(file)
     players = csv.DictReader(csvfile, delimiter=';')
@@ -85,17 +85,18 @@ def parse_data(file):
         playerdata.append(row)
 
     # testing
-    for i in range(len(playerdata)):
-        for item in playerdata[i]:
-            print(item, playerdata[i][item])
+    # for i in range(len(playerdata)):
+    #     for item in playerdata[i]:
+    #         print(item, playerdata[i][item])
     # /testing
 
     csvfile.close()
+    return playerdata
 
 
 def main():
     format_file(filename)
-    parse_data(newfile)
+    playerdata = parse_data(newfile)
 
 
 if __name__ == '__main__':

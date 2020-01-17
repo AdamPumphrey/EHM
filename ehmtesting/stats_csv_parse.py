@@ -62,7 +62,7 @@ def parse_skaters(skaters_name):
     This function parses a skater stat import file for importing skater stat data.
     Function creates a csv dictionary, and appends each row of the dictionary to a list for importing.
     :param skaters_name: string, filename to be used - regseason_statimport.csv or playoff_statimport.csv
-    :return:
+    :return: playerstat_data (list)
     """
     skaters = open(skaters_name, 'r', encoding='cp1252')
     playerstats = csv.DictReader(skaters, delimiter=',')
@@ -71,10 +71,11 @@ def parse_skaters(skaters_name):
         playerstat_data.append(row)
 
     # testing
-    for i in range(len(playerstat_data)):
-        for item in playerstat_data[i]:
-            print(item, playerstat_data[i][item])
+    # for i in range(len(playerstat_data)):
+    #     for item in playerstat_data[i]:
+    #         print(item, playerstat_data[i][item])
     # /testing
+    return playerstat_data
 
 
 def parse_goalies(goalies_name):
@@ -82,7 +83,7 @@ def parse_goalies(goalies_name):
     This function parses a goalie stat import file for importing goalie stat data.
     Function creates a csv dictionary, and appends each row of the dictionary to a list for importing.
     :param goalies_name: string, filename to be used - regseason_goalstatimport.csv or playoff_goalstatimport.csv
-    :return:
+    :return: goaliestat_data (list)
     """
     goalies = open(goalies_name, 'r', encoding='cp1252')
     goaliestats = csv.DictReader(goalies, delimiter=',')
@@ -91,10 +92,11 @@ def parse_goalies(goalies_name):
         goaliestat_data.append(row)
 
     # testing
-    for i in range(len(goaliestat_data)):
-        for item in goaliestat_data[i]:
-            print(item, goaliestat_data[i][item])
+    # for i in range(len(goaliestat_data)):
+    #     for item in goaliestat_data[i]:
+    #         print(item, goaliestat_data[i][item])
     # /testing
+    return goaliestat_data
 
 
 def main():
