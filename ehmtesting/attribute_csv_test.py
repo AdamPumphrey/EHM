@@ -4,15 +4,25 @@
 
 import csv
 
+# the following variables are to be input during the importing process thru the GUI eventually
 filename = 'testplayers.csv'
 newfile = 'playeratt_import.csv'
 year = '2020;'
 
 
 def format_file(file):
+    """
+    This function formats a .csv file exported from EHM Assistant with the proper options selected.
+    Function changes column headers, inserts year value for each row, and writes the modified data
+    to playeratt_import.csv - the file to be used for importing player attributes.
+
+    :param file: string, the filename of the .csv exported from EHM Assistant
+    :return:
+    """
     tempfile = open(file, 'r')
     tempdata = tempfile.readlines()
 
+    # format headers
     tempdata[0] = tempdata[0][:15] + 'Team' + tempdata[0][27:]
 
     tempdata[0] = tempdata[0][:20] + 'League' + tempdata[0][36:]
@@ -25,14 +35,18 @@ def format_file(file):
 
     print(tempdata)
 
+    # add year data to each row in proper spot
     for i in range(len(tempdata)):
+        # ignore the first row (headers)
         if i == 0:
             pass
         else:
             count = 0
             for x in range(len(tempdata[i])):
+                # each item is delimited by a semicolon
                 if tempdata[i][x] == ';':
                     count += 1
+                # insert row after the seventh semicolon delimiter
                 if count == 7:
                     tempdata[i] = tempdata[i][:x + 1] + year + tempdata[i][x + 1:]
                     print(tempdata[i])
@@ -45,6 +59,13 @@ def format_file(file):
 
 
 def parse_data(file):
+    """
+    This function parses a 'playeratt_import.csv' for importing player attribute data.
+    Function creates a csv dictionary, formats each row correctly, and appends each row of the dictionary
+    to a list for importing.
+    :param file: string, the filename (playeratt_import.csv)
+    :return:
+    """
     csvfile = open(file)
     players = csv.DictReader(csvfile, delimiter=';')
     playerdata = []

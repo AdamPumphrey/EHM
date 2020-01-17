@@ -1,9 +1,11 @@
 # Written by Adam Pumphrey
 # CSV parser for player stat files generated from stats_csv_test.py
 # Opens and retrieves data from stat csvs
+# All files created by this program SHOULD have windows-1252 encoding to deal with umlauts and other characters
 
 import csv
 
+# the following filename variables are to be constant
 regseason_filename = 'regseason_statimport.csv'
 regseasongoalies_filename = 'regseason_goalstatimport.csv'
 playoff_filename = 'playoff_statimport.csv'
@@ -11,36 +13,57 @@ playoffgoalies_filename = 'playoff_goalstatimport.csv'
 
 
 def format_skaters(skaters_name):
+    """
+    This function performs minor formatting for skater stat import files - regseason_statimport.csv and
+    playoff_statimport.csv.
+    :param skaters_name: string, filename to be used - should either be regseason_statimport.csv or
+    playoff_statimport.csv
+    :return:
+    """
     tempfile = open(skaters_name, 'r', encoding='cp1252')
     tempdata = tempfile.readlines()
 
-    # tempdata[0] = tempdata[0][0:74] + '%' + tempdata[0][75:]
+    # minor header formatting
     tempdata[0] = tempdata[0][0:79] + '%' + tempdata[0][79:]
-    # tempdata[0] = tempdata[0][0:134] + tempdata[0][135:]
     tempdata[0] = tempdata[0][0:139] + tempdata[0][140:]
     print(tempdata)
     tempfile.close()
 
+    # re-write formatted data to same file
     tempfile = open(skaters_name, 'w', encoding='cp1252')
     tempfile.writelines(tempdata)
     tempfile.close()
 
 
 def format_goalies(goalies_name):
+    """
+    This function performs minor formatting for goalie stat import files - regseason_goalstatimport.csv and
+    playoff_goalstatimport.csv.
+    :param goalies_name: string, filename to be used - should either be regseason_goalstatimport.csv or
+    playoff_goalstatimport.csv
+    :return:
+    """
     tempfile = open(goalies_name, 'r', encoding='cp1252')
     tempdata = tempfile.readlines()
 
-    # tempdata[0] = tempdata[0][0:36] + '%' + tempdata[0][36:]
+    # minor header formatting
     tempdata[0] = tempdata[0][0:41] + '%' + tempdata[0][41:]
     print(tempdata)
     tempfile.close()
 
+    # re-write formatted data to same file
     tempfile = open(goalies_name, 'w', encoding='cp1252')
     tempfile.writelines(tempdata)
     tempfile.close()
 
 
 def parse_skaters(skaters_name):
+    """
+    This function parses a skater stat import file for importing skater stat data.
+    Function creates a csv dictionary, and appends each row of the dictionary to a list for importing.
+    :param skaters_name: string, filename to be used - regseason_statimport.csv or playoff_statimport.csv
+    :return:
+    """
     skaters = open(skaters_name, 'r', encoding='cp1252')
     playerstats = csv.DictReader(skaters, delimiter=',')
     playerstat_data = []
@@ -55,6 +78,12 @@ def parse_skaters(skaters_name):
 
 
 def parse_goalies(goalies_name):
+    """
+    This function parses a goalie stat import file for importing goalie stat data.
+    Function creates a csv dictionary, and appends each row of the dictionary to a list for importing.
+    :param goalies_name: string, filename to be used - regseason_goalstatimport.csv or playoff_goalstatimport.csv
+    :return:
+    """
     goalies = open(goalies_name, 'r', encoding='cp1252')
     goaliestats = csv.DictReader(goalies, delimiter=',')
     goaliestat_data = []
