@@ -24,7 +24,7 @@ def format_skaters(skaters_name):
     tempdata = tempfile.readlines()
 
     # minor header formatting
-    tempdata[0] = tempdata[0][0:79] + '%' + tempdata[0][79:]
+    tempdata[0] = tempdata[0][0:79] + '%' + tempdata[0][80:]
     tempdata[0] = tempdata[0][0:139] + tempdata[0][140:]
     print(tempdata)
     tempfile.close()
