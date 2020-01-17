@@ -27,8 +27,27 @@ def create_player(conn):
         print(e)
 
 
-def create_player_stats(conn):
-    statement = """CREATE TABLE IF NOT EXISTS playerstats (id integer NOT NULL, year integer NOT NULL, teamplaying 
+def create_regplayer_stats(conn):
+    statement = """CREATE TABLE IF NOT EXISTS regplayerstats (id integer NOT NULL, year integer NOT NULL, teamplaying 
+    text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int default 0, 
+    plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, avr real default 
+    0.00, atoi text default '00:00', hits int default 0, wins int default 0, losses int default 0, ties int default 0, 
+    shotsagainst int default 0, goalsagainst int default 0, gaa real default 0.00, svp real default 0.000, 
+    shutouts int default 0, minutes int default 0, ppg int default 0, ppa int default 0, ppp int default 0, 
+    shg int default 0, sha int default 0, shp int default 0, gwg int default 0, fg int default 0, giveaways int 
+    default 0, takeaways int default 0, fopercent real default 0.00, shotsblocked int default 0, appt text default 
+    '00:00', apkt text default '00:00', plus int default 0, minus int default 0, firststars int default 0, PRIMARY KEY (
+    id, year, teamplaying));"""
+    try:
+        c = conn.cursor()
+        c.execute(statement)
+        conn.commit()
+    except sqlite3.Error as e:
+        print(e)
+
+
+def create_poffplayer_stats(conn):
+    statement = """CREATE TABLE IF NOT EXISTS poffplayerstats (id integer NOT NULL, year integer NOT NULL, teamplaying 
     text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int default 0, 
     plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, avr real default 
     0.00, atoi text default '00:00', hits int default 0, wins int default 0, losses int default 0, ties int default 0, 
@@ -69,7 +88,8 @@ def main():
     conn = connection()
     create_player(conn)
     create_player_attributes(conn)
-    create_player_stats(conn)
+    create_regplayer_stats(conn)
+    create_poffplayer_stats(conn)
     conn.close()
 
 
