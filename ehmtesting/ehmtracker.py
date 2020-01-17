@@ -14,7 +14,7 @@ def get_statimport_files(statfile, teamid):
 
 
 def get_attimport_list(attfile, playeratts):
-    # attparse.format_file(attfile)
+    attparse.format_file(attfile)
     return attparse.parse_data(playeratts)
 
 
@@ -85,6 +85,7 @@ def main():
     poffskaters = 'playoff_statimport.csv'
     poffgoalies = 'playoff_goalstatimport.csv'
     conn = connection()
+    #create_db(conn)
     get_statimport_files(statfile, teamid)
     player_attlist = get_attimport_list(attfile, playeratts)
     reg_skaterstats = get_skaterstat_list(regskaters)

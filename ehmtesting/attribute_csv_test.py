@@ -3,6 +3,7 @@
 # Opens and retrieves data from csv exported from EHM Assistant
 
 import csv
+import sys
 
 # the following variables are to be input during the importing process thru the GUI eventually
 filename = 'testplayers.csv'
@@ -19,7 +20,7 @@ def format_file(file):
     :param file: string, the filename of the .csv exported from EHM Assistant
     :return:
     """
-    tempfile = open(file, 'r')
+    tempfile = open(file, 'r', encoding='cp1252')
     tempdata = tempfile.readlines()
 
     # format headers
@@ -33,7 +34,7 @@ def format_file(file):
 
     tempdata[0] = tempdata[0][:51] + 'Year;' + tempdata[0][51:]
 
-    print(tempdata)
+    # print(tempdata)
 
     # add year data to each row in proper spot
     for i in range(len(tempdata)):
@@ -53,7 +54,7 @@ def format_file(file):
                     break
 
     tempfile.close()
-    tempfile = open(newfile, 'w')
+    tempfile = open(newfile, 'w', encoding='cp1252')
     tempfile.writelines(tempdata)
     tempfile.close()
 
@@ -66,7 +67,7 @@ def parse_data(file):
     :param file: string, the filename (playeratt_import.csv)
     :return: playerdata (list)
     """
-    csvfile = open(file)
+    csvfile = open(file, 'r', encoding='cp1252')
     players = csv.DictReader(csvfile, delimiter=';')
     playerdata = []
     for row in players:
