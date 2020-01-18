@@ -6,7 +6,6 @@ import stats_csv_parse as statparse
 import attribute_csv_test as attparse
 import sqlite3
 import database_config as db_config
-import os.path
 
 
 def get_statimport_files(statfile, teamid):
@@ -47,11 +46,26 @@ def create_db(conn):
 
 def import_player(conn, playeratts):
     c = conn.cursor()
+    existing_vals = []
     for row in playeratts:
-        c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
+        c.execute("SELECT * FROM player WHERE id = ?", (row['Id'],))
+        result = c.fetchall()
+        if result:
+            existing_vals.append()
+            
+    for row in playeratts:
+        if row['Id'] not in existing_vals:
+            c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
                                                                             row['Year'], row['Age'], row['Team Rights'],
                                                                             row['Team'], row['League'],
                                                                             row['Position(s)']))
+        else:
+            c.execute('''UPDATE player SET year = ?, age = ?, teamrights = ?, 
+            teamplaying = ?, leagueplaying = ?, positions = ? WHERE id = ?''', (row['Year'], row['Age'], 
+                                                                                row['Team Rights'], row['Team'],
+                                                                                row['League'], row['Position(s)'],
+                                                                                row['Id']))
+                                                                                
     conn.commit()
 
 
@@ -85,7 +99,7 @@ def main():
     poffskaters = 'playoff_statimport.csv'
     poffgoalies = 'playoff_goalstatimport.csv'
     conn = connection()
-    #create_db(conn)
+    create_db(conn)
     get_statimport_files(statfile, teamid)
     player_attlist = get_attimport_list(attfile, playeratts)
     reg_skaterstats = get_skaterstat_list(regskaters)
