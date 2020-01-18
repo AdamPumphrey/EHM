@@ -3,7 +3,6 @@
 # Opens and retrieves data from csv exported from EHM Assistant
 
 import csv
-import sys
 
 # the following variables are to be input during the importing process thru the GUI eventually
 filename = 'testplayers.csv'
@@ -96,8 +95,10 @@ def parse_data(file):
 
 
 def main():
-    format_file(filename)
+    #format_file(filename)
     playerdata = parse_data(newfile)
+    for row in playerdata:
+        print(row)
 
 
 if __name__ == '__main__':
