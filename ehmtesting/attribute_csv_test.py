@@ -5,18 +5,19 @@
 import csv
 
 # the following variables are to be input during the importing process thru the GUI eventually
-filename = 'testplayers.csv'
+filename = 'testplay1.csv'
 newfile = 'playeratt_import.csv'
 year = '2020;'
 
 
-def format_file(file):
+def format_file(file, year):
     """
     This function formats a .csv file exported from EHM Assistant with the proper options selected.
     Function changes column headers, inserts year value for each row, and writes the modified data
     to playeratt_import.csv - the file to be used for importing player attributes.
 
     :param file: string, the filename of the .csv exported from EHM Assistant
+    :param year: string, the year/season of data in-game with a semicolon at the end eg) '2020;'
     :return:
     """
     tempfile = open(file, 'r', encoding='cp1252')
@@ -95,7 +96,7 @@ def parse_data(file):
 
 
 def main():
-    #format_file(filename)
+    format_file(filename, year)
     playerdata = parse_data(newfile)
     for row in playerdata:
         print(row)
