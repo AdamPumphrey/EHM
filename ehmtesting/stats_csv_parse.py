@@ -26,7 +26,7 @@ def format_skaters(skaters_name):
     # minor header formatting
     tempdata[0] = tempdata[0][0:79] + '%' + tempdata[0][80:]
     tempdata[0] = tempdata[0][0:139] + tempdata[0][140:]
-    print(tempdata)
+    # print(tempdata)
     tempfile.close()
 
     # re-write formatted data to same file
@@ -48,7 +48,7 @@ def format_goalies(goalies_name):
 
     # minor header formatting
     tempdata[0] = tempdata[0][0:41] + '%' + tempdata[0][41:]
-    print(tempdata)
+    # print(tempdata)
     tempfile.close()
 
     # re-write formatted data to same file
