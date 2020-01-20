@@ -12,8 +12,8 @@ def get_statimport_files(statfile, teamid):
     statformat.parse_statfile(statfile, teamid)
 
 
-def get_attimport_list(attfile, playeratts):
-    attparse.format_file(attfile)
+def get_attimport_list(attfile, playeratts, year):
+    attparse.format_file(attfile, year)
     return attparse.parse_data(playeratts)
 
 
@@ -51,21 +51,22 @@ def import_player(conn, playeratts):
         c.execute("SELECT * FROM player WHERE id = ?", (row['Id'],))
         result = c.fetchall()
         if result:
-            existing_vals.append()
-            
+            existing_vals.append(str(result[0][0]))
+
     for row in playeratts:
         if row['Id'] not in existing_vals:
             c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
-                                                                            row['Year'], row['Age'], row['Team Rights'],
-                                                                            row['Team'], row['League'],
-                                                                            row['Position(s)']))
+                                                                                row['Year'], row['Age'],
+                                                                                row['Team Rights'],
+                                                                                row['Team'], row['League'],
+                                                                                row['Position(s)']))
         else:
             c.execute('''UPDATE player SET year = ?, age = ?, teamrights = ?, 
-            teamplaying = ?, leagueplaying = ?, positions = ? WHERE id = ?''', (row['Year'], row['Age'], 
+            teamplaying = ?, leagueplaying = ?, positions = ? WHERE id = ?''', (row['Year'], row['Age'],
                                                                                 row['Team Rights'], row['Team'],
                                                                                 row['League'], row['Position(s)'],
                                                                                 row['Id']))
-                                                                                
+
     conn.commit()
 
 
@@ -90,7 +91,8 @@ def import_poff_goaliestats(conn, goaliestats):
 
 
 def main():
-    attfile = 'testplayers.csv'
+    attfile = 'testplay2.csv'
+    year = '2021;'
     statfile = 'teststats2.csv'
     teamid = 'Canucks'
     playeratts = 'playeratt_import.csv'
@@ -101,7 +103,7 @@ def main():
     conn = connection()
     create_db(conn)
     get_statimport_files(statfile, teamid)
-    player_attlist = get_attimport_list(attfile, playeratts)
+    player_attlist = get_attimport_list(attfile, playeratts, year)
     reg_skaterstats = get_skaterstat_list(regskaters)
     reg_goaliestats = get_goaliestat_list(reggoalies)
     poff_skaterstats = get_skaterstat_list(poffskaters)
@@ -112,8 +114,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
