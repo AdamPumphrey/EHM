@@ -45,6 +45,12 @@ def create_db(conn):
 
 
 def import_player(conn, playeratts):
+    """
+    Takes a playeratt_import.csv file.
+    :param conn:
+    :param playeratts:
+    :return:
+    """
     c = conn.cursor()
     existing_players = []
     existing_atts = []
@@ -92,16 +98,6 @@ def import_player(conn, playeratts):
                                                                     row['Reflexes']))
 
     conn.commit()
-
-
-def import_playeratts(conn, playeratts):
-    c = conn.cursor()
-    existing_vals = []
-    for row in playeratts:
-        c.execute("SELECT * FROM player WHERE id = ?", (row['Id'],))
-        result = c.fetchall()
-        if result:
-            existing_vals.append(str(result[0][0]))
 
 
 def import_skaterstats(conn, skaterstats):
