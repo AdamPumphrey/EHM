@@ -101,7 +101,22 @@ def import_player(conn, playeratts):
 
 
 def import_skaterstats(conn, skaterstats):
-    pass
+    c = conn.cursor()
+    for row in skaterstats:
+        print(row)
+        c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
+        result = c.fetchall()
+        if len(result) == 1:
+            row['Id'] = result[0][0]
+        else:
+            print('error')
+        c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'], row['A'],
+                                                row['P'], row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
+                                                row['ATOI'], row['HT'], row['PPg'], row['PPa'], row['PPp'], row['SHg'],
+                                                row['SHa'], row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
+                                                row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
+                                                row['FS']))
 
 
 def import_goaliestats(conn, goaliestats):
@@ -117,9 +132,9 @@ def import_poff_goaliestats(conn, goaliestats):
 
 
 def main():
-    attfile = 'testplay1.csv'
+    attfile = 'canuckatts.csv'
     year = '2020;'
-    statfile = 'teststats2.csv'
+    statfile = 'canuckstats.csv'
     teamid = 'Canucks'
     playeratts = 'playeratt_import.csv'
     regskaters = 'regseason_statimport.csv'
@@ -135,6 +150,7 @@ def main():
     poff_skaterstats = get_skaterstat_list(poffskaters)
     poff_goaliestats = get_goaliestat_list(poffgoalies)
     import_player(conn, player_attlist)
+    import_skaterstats(conn, reg_skaterstats)
     conn.close()
 
 
