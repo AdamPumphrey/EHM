@@ -50,7 +50,6 @@ def format_file(file, year):
                 # insert row after the seventh semicolon delimiter
                 if count == 7:
                     tempdata[i] = tempdata[i][:x + 1] + year + tempdata[i][x + 1:]
-                    print(tempdata[i])
                     break
 
     tempfile.close()
