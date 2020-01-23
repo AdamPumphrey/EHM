@@ -42,6 +42,9 @@ def create_db(conn):
     db_config.create_player(conn)
     db_config.create_player_attributes(conn)
     db_config.create_regplayer_stats(conn)
+    db_config.create_reggoalie_stats(conn)
+    db_config.create_poffplayer_stats(conn)
+    db_config.create_poffgoalie_stats(conn)
 
 
 def import_player(conn, playeratts):
@@ -100,30 +103,39 @@ def import_player(conn, playeratts):
     conn.commit()
 
 
-def import_skaterstats(conn, skaterstats):
+def import_skaterstats(conn, skaterstats, playoffs=0):
     c = conn.cursor()
     for row in skaterstats:
-        print(row)
         c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
         result = c.fetchall()
         if len(result) == 1:
             row['Id'] = result[0][0]
+            print(row)
         else:
             print('error')
-        c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'], row['A'],
-                                                row['P'], row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
-                                                row['ATOI'], row['HT'], row['PPg'], row['PPa'], row['PPp'], row['SHg'],
-                                                row['SHa'], row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
-                                                row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
-                                                row['FS']))
+            print(row)
+            return
+        if not playoffs:
+            c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'], row['A'],
+                                              row['P'], row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
+                                              row['ATOI'], row['HT'], row['PPg'], row['PPa'], row['PPp'], row['SHg'],
+                                              row['SHa'], row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
+                                              row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
+                                              row['FS']))
+        else:
+            c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
+                                                          row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
+                                                          row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
+                                                          row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
+                                                          row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
+                                                          row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
+                                                          row['FS']))
+    conn.commit()
 
 
 def import_goaliestats(conn, goaliestats):
-    pass
-
-
-def import_poff_skaterstats(conn, skaterstats):
     pass
 
 
