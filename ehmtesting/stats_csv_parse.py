@@ -68,6 +68,9 @@ def parse_skaters(skaters_name):
     playerstats = csv.DictReader(skaters, delimiter=',')
     playerstat_data = []
     for row in playerstats:
+        del row['']
+        pos = row['Pos']
+        row['Pos'] = pos.replace('/', ',')
         playerstat_data.append(row)
 
     # testing
