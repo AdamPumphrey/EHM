@@ -59,7 +59,7 @@ def format_goalies(goalies_name):
 
 def parse_skaters(skaters_name):
     """
-    This function parses a skater stat import file for importing skater stat data.
+    This function parses and formats a skater stat import file for importing skater stat data.
     Function creates a csv dictionary, and appends each row of the dictionary to a list for importing.
     :param skaters_name: string, filename to be used - regseason_statimport.csv or playoff_statimport.csv
     :return: playerstat_data (list)
@@ -68,12 +68,14 @@ def parse_skaters(skaters_name):
     playerstats = csv.DictReader(skaters, delimiter=',')
     playerstat_data = []
     for row in playerstats:
+        # formatting
         del row['']
+        # replace / with , to mirror player attribute position format
         row['Pos'] = row['Pos'].replace('/', ',')
         pos = row['Pos']
         newpos = []
         pos = pos.split(',')
-        # Position order handling to coincide with player attribute formatting
+        # Position order handling to coincide with player attribute position formatting
         # LD RD LW C RW
         if 'LD' in pos:
             newpos.append('LD')
