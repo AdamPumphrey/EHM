@@ -105,33 +105,52 @@ def import_player(conn, playeratts):
 
 def import_skaterstats(conn, skaterstats, playoffs=0):
     c = conn.cursor()
+    existing_poffstats = []
+    existing_regstats = []
     for row in skaterstats:
         c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
         result = c.fetchall()
         if len(result) == 1:
             row['Id'] = result[0][0]
-            print(row)
         else:
             print('error')
-            print(row)
             return
         if not playoffs:
-            c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'], row['A'],
-                                              row['P'], row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
-                                              row['ATOI'], row['HT'], row['PPg'], row['PPa'], row['PPp'], row['SHg'],
-                                              row['SHa'], row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
-                                              row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
-                                              row['FS']))
+            c.execute("SELECT * FROM regplayerstats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
+                                                                                                     row['Year'],
+                                                                                                     row['Team']))
+            result = c.fetchall()
+            if result:
+                existing_regstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
         else:
-            c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
-                                                          row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
-                                                          row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
-                                                          row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
-                                                          row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
-                                                          row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
-                                                          row['FS']))
+            c.execute("SELECT * FROM poffplayerstats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
+                                                                                                      row['Year'],
+                                                                                                      row['Team']))
+            result = c.fetchall()
+            if result:
+                existing_poffstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
+
+    for row in skaterstats:
+        if not playoffs:
+            if (str(row['Id']), row['Year'], row['Team']) not in existing_regstats:
+                c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
+                                                            row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
+                                                            row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
+                                                            row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
+                                                            row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
+                                                            row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
+                                                            row['FS']))
+        else:
+            if (str(row['Id']), row['Year'], row['Team']) not in existing_poffstats:
+                c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
+                                                            row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
+                                                            row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
+                                                            row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
+                                                            row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
+                                                            row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
+                                                            row['FS']))
     conn.commit()
 
 
@@ -163,6 +182,7 @@ def main():
     poff_goaliestats = get_goaliestat_list(poffgoalies)
     import_player(conn, player_attlist)
     import_skaterstats(conn, reg_skaterstats)
+    import_skaterstats(conn, poff_skaterstats, 1)
     conn.close()
 
 
