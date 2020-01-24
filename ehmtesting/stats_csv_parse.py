@@ -69,8 +69,31 @@ def parse_skaters(skaters_name):
     playerstat_data = []
     for row in playerstats:
         del row['']
+        row['Pos'] = row['Pos'].replace('/', ',')
         pos = row['Pos']
-        row['Pos'] = pos.replace('/', ',')
+        newpos = []
+        pos = pos.split(',')
+        # Position order handling to coincide with player attribute formatting
+        # LD RD LW C RW
+        if 'LD' in pos:
+            newpos.append('LD')
+        if 'RD' in pos:
+            newpos.append('RD')
+        if 'LW' in pos:
+            newpos.append('LW')
+        if 'C' in pos:
+            newpos.append('C')
+        if 'RW' in pos:
+            newpos.append('RW')
+        pos = ''
+        for i in range(len(newpos)):
+            if i == len(newpos) - 1:
+                pos += newpos[i]
+            else:
+                pos += newpos[i] + ','
+
+        # print(pos)
+        row['Pos'] = pos
         playerstat_data.append(row)
 
     # testing
