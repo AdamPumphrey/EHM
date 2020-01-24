@@ -9,25 +9,57 @@ import database_config as db_config
 
 
 def get_statimport_files(statfile, teamid):
+    """
+    Takes a raw .csv file exported from EHM and creates up to four parsed stat files - regular season skates, regular
+    season goalies, playoff skaters, and playoff goalies.
+    :param statfile: string, name of .csv file exported from EHM's NHL stat page
+    :param teamid: string, the identifier of the team you want to grab data for - may vary between EHM databases -
+                   easy way to find teamid is to open the .csv file and look for the team you want eg) 'Canucks'
+    :return:
+    """
     statformat.parse_statfile(statfile, teamid)
 
 
 def get_attimport_list(attfile, playeratts, year):
+    """
+    Takes a raw .csv file exported from EHM Assistant and formats, parses, and creates one file - used for importing
+    players and player attributes. Returns a list to be used for importing.
+    :param attfile: string, name of .csv file exported from EHM Assistant (with correct filters)
+    :param playeratts: string, name of formatted .csv file created from attparse.format_file
+    :param year: string, the year/season of the import with a semicolon eg) '2020;'
+    :return: list, used for importing players and their attributes
+    """
     attparse.format_file(attfile, year)
     return attparse.parse_data(playeratts)
 
 
 def get_skaterstat_list(skaterfile):
+    """
+    Takes a formatted .csv file created via get_statimport_files and parses to obtain a list used for importing
+    the retrieved data.
+    :param skaterfile: string, name of formatted .csv file created via get_statimport_files
+    :return: list, used for importing skater reg season/playoff stats
+    """
     statparse.format_skaters(skaterfile)
     return statparse.parse_skaters(skaterfile)
 
 
 def get_goaliestat_list(goaliefile):
+    """
+    Takes a formatted .csv file created via get_statimport_files and parses to obtain a list used for importing
+    the retrieved data.
+    :param goaliefile: string, name of formatted .csv file created via get_statimport_files
+    :return: list, used for importing goalie reg season/playoff stats
+    """
     statparse.format_goalies(goaliefile)
     return statparse.parse_goalies(goaliefile)
 
 
 def connection():
+    """
+    Establishes connection with ehmtracking.db database via sqlite3.
+    :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
+    """
     dbname = 'ehmtracking.db'
     conn = None
     try:
@@ -39,6 +71,11 @@ def connection():
 
 
 def create_db(conn):
+    """
+    Creates tables in ehmtracking.db if they don't already exist.
+    :param conn: sqlite3.Connection, connection to the database
+    :return:
+    """
     db_config.create_player(conn)
     db_config.create_player_attributes(conn)
     db_config.create_regplayer_stats(conn)
@@ -49,39 +86,50 @@ def create_db(conn):
 
 def import_player(conn, playeratts):
     """
-    Takes a playeratt_import.csv file.
-    :param conn:
-    :param playeratts:
+    Imports player data and player attribute data into database.
+    We want one line for each player in 'player' table (hence update condition), however we are fine with multiple
+    lines per player in 'playerattributes' so we can display attribute growth. 'Player' table contains core player data,
+    'playerattributes' is meant to show year-over-year growth of players.
+    Idea with 'playerattributes' is to import once a season - therefore no updates necessary.
+    :param conn: sqlite3.Connection, connection to the database
+    :param playeratts: list, the player data to be imported
     :return:
     """
     c = conn.cursor()
     existing_players = []
     existing_atts = []
     for row in playeratts:
+        # check database ('player' table) to see if player already exists
         c.execute("SELECT * FROM player WHERE id = ?", (row['Id'],))
         result = c.fetchall()
         if result:
+            # add existing player to existing player list
             existing_players.append(str(result[0][0]))
+        # check database ('playerattributes' table) to see if player already has attributes entered for that year/team
         c.execute("SELECT * FROM playerattributes WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
                                                                                                    row['Year'],
                                                                                                    row['Team']))
         result = c.fetchall()
         if result:
+            # add player with existing attributes to existing player attributes list
             existing_atts.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
 
     for row in playeratts:
+        # if player does not exist in database
         if row['Id'] not in existing_players:
             c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
                                                                                 row['Year'], row['Age'],
                                                                                 row['Team Rights'],
                                                                                 row['Team'], row['League'],
                                                                                 row['Position(s)']))
+        # player exists in database - update values for player
         else:
             c.execute('''UPDATE player SET year = ?, age = ?, teamrights = ?, 
             teamplaying = ?, leagueplaying = ?, positions = ? WHERE id = ?''', (row['Year'], row['Age'],
                                                                                 row['Team Rights'], row['Team'],
                                                                                 row['League'], row['Position(s)'],
                                                                                 row['Id']))
+        # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
             c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'],
@@ -104,6 +152,7 @@ def import_player(conn, playeratts):
 
 
 def import_skaterstats(conn, skaterstats, playoffs=0):
+    # TODO: add stat updating if line for current year of stats already exists
     c = conn.cursor()
     existing_poffstats = []
     existing_regstats = []
@@ -154,12 +203,46 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
     conn.commit()
 
 
-def import_goaliestats(conn, goaliestats):
-    pass
+def import_goaliestats(conn, goaliestats, playoffs=0):
+    # TODO: add stat updating if line for current year of stats already exists
+    c = conn.cursor()
+    existing_poffgoalstats = []
+    existing_reggoalstats = []
+    for row in goaliestats:
+        c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
+        result = c.fetchall()
+        if len(result) == 1:
+            row['Id'] = result[0][0]
+        else:
+            print('error')
+            return
+        if not playoffs:
+            c.execute("SELECT * FROM reggoaliestats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
+                                                                                                     row['Year'],
+                                                                                                     row['Team']))
+            result = c.fetchall()
+            if result:
+                existing_reggoalstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
+        else:
+            c.execute("SELECT * FROM poffgoaliestats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
+                                                                                                      row['Year'],
+                                                                                                      row['Team']))
+            result = c.fetchall()
+            if result:
+                existing_poffgoalstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
 
-
-def import_poff_goaliestats(conn, goaliestats):
-    pass
+    for row in goaliestats:
+        if not playoffs:
+            if (str(row['Id']), row['Year'], row['Team']) not in existing_reggoalstats:
+                c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
+                           row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+        else:
+            if (str(row['Id']), row['Year'], row['Team']) not in existing_poffgoalstats:
+                c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
+                           row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+    conn.commit()
 
 
 def main():
@@ -183,6 +266,8 @@ def main():
     import_player(conn, player_attlist)
     import_skaterstats(conn, reg_skaterstats)
     import_skaterstats(conn, poff_skaterstats, 1)
+    import_goaliestats(conn, reg_goaliestats)
+    import_goaliestats(conn, poff_goaliestats, 1)
     conn.close()
 
 
