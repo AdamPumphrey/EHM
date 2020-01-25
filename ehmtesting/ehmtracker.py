@@ -152,7 +152,6 @@ def import_player(conn, playeratts):
 
 
 def import_skaterstats(conn, skaterstats, playoffs=0):
-    # TODO: add stat updating if line for current year of stats already exists
     c = conn.cursor()
     existing_poffstats = []
     existing_regstats = []
@@ -190,6 +189,16 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
                                                             row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
                                                             row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
                                                             row['FS']))
+            else:
+                c.execute('''UPDATE regplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
+                hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
+                takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
+                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'], row['+/-'],
+                                    row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
+                                    row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'], row['FG'],
+                                    row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
+                                    row['-'], row['FS'], row['Id']))
         else:
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffstats:
                 c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
@@ -200,6 +209,16 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
                                                             row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
                                                             row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
                                                             row['FS']))
+            else:
+                c.execute('''UPDATE poffplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
+                hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
+                takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
+                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'], row['+/-'],
+                                    row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
+                                    row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'], row['FG'],
+                                    row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
+                                    row['-'], row['FS'], row['Id']))
     conn.commit()
 
 
