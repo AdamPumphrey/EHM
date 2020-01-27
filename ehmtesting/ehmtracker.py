@@ -152,34 +152,55 @@ def import_player(conn, playeratts):
 
 
 def import_skaterstats(conn, skaterstats, playoffs=0):
+    """
+    Imports skater stat data into database.
+    Individual stat lines in db denoted by combination of ID, year, and team. Therefore multiple entries can exist
+    for the same player in the same year if they change teams during the year. Update condition will overwrite
+    existing data for that combination of ID, year, and team - it exists to counter key errors. Skater stats intended
+    to be imported once a year, preferably with playoff data.
+    :param conn: sqlite3.Connection, connection to the database
+    :param skaterstats: list, skater stats to be imported
+    :param playoffs: int, optional, denotes playoff stat importing
+    :return:
+    """
     c = conn.cursor()
     existing_poffstats = []
     existing_regstats = []
     for row in skaterstats:
+        # grab ID of current player from 'players' table
         c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
         result = c.fetchall()
+        # ID grabbed should match ID given, error if not
         if len(result) == 1:
             row['Id'] = result[0][0]
         else:
             print('error')
             return
+        # reg season checking
         if not playoffs:
+            # check database ('player' table) to see if player already exists
             c.execute("SELECT * FROM regplayerstats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
                                                                                                      row['Year'],
                                                                                                      row['Team']))
             result = c.fetchall()
             if result:
+                # add existing players to existing player list
                 existing_regstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
+        # playoff checking
         else:
+            # check database ('player' table) to see if player already exists
             c.execute("SELECT * FROM poffplayerstats WHERE id = ? AND year = ? AND teamplaying = ?", (row['Id'],
                                                                                                       row['Year'],
                                                                                                       row['Team']))
             result = c.fetchall()
             if result:
+                # add existing players to existing player list
                 existing_poffstats.append((str(result[0][0]), str(result[0][1]), str(result[0][2])))
 
     for row in skaterstats:
+        # reg season importing
         if not playoffs:
+            # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_regstats:
                 c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
@@ -190,6 +211,7 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
                                                             row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
                                                             row['FS']))
             else:
+                # player stats already in table - overwrite
                 c.execute('''UPDATE regplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
@@ -199,7 +221,9 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
                                     row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'], row['FG'],
                                     row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
                                     row['-'], row['FS'], row['Id']))
+        # playoff stat importing
         else:
+            # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffstats:
                 c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
@@ -210,6 +234,7 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
                                                             row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
                                                             row['FS']))
             else:
+                # player stats already in table - overwrite
                 c.execute('''UPDATE poffplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
@@ -223,7 +248,13 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
 
 
 def import_goaliestats(conn, goaliestats, playoffs=0):
-    # TODO: add stat updating if line for current year of stats already exists
+    """
+
+    :param conn:
+    :param goaliestats:
+    :param playoffs:
+    :return:
+    """
     c = conn.cursor()
     existing_poffgoalstats = []
     existing_reggoalstats = []
@@ -256,11 +287,21 @@ def import_goaliestats(conn, goaliestats, playoffs=0):
                 c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                           (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
                            row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+            else:
+                c.execute('''UPDATE reggoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, losses = ?,
+                 ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, minutes = ?
+                  WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
+                                    row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
         else:
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffgoalstats:
                 c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                           (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
                            row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+            else:
+                c.execute('''UPDATE poffgoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, 
+                losses = ?, ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, minutes = ? 
+                WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
+                                  row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
     conn.commit()
 
 
