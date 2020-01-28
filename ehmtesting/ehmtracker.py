@@ -1,9 +1,9 @@
 # Written by Adam Pumphrey
 # EHM Tracker file
 
-import stats_csv_test as statformat
+import stats_csv as statformat
 import stats_csv_parse as statparse
-import attribute_csv_test as attparse
+import attribute_csv as attparse
 import sqlite3
 import database_config as db_config
 
