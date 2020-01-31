@@ -55,12 +55,12 @@ def get_goaliestat_list(goaliefile):
     return statparse.parse_goalies(goaliefile)
 
 
-def connection():
+def connection(dbname):
     """
     Establishes connection with ehmtracking.db database via sqlite3.
     :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
     """
-    dbname = 'ehmtracking.db'
+    #dbname = 'ehmtracking.db'
     conn = None
     try:
         conn = sqlite3.connect(dbname)
