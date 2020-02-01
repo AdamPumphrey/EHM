@@ -18,6 +18,7 @@ class Ui_dbname_input_dialog(QtWidgets.QDialog):
     def setupUi(self, dbname_input_dialog):
         dbname_input_dialog.setObjectName("dbname_input_dialog")
         dbname_input_dialog.resize(388, 91)
+        dbname_input_dialog.setWindowIcon(QtGui.QIcon('ehmtracking.ico'))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
