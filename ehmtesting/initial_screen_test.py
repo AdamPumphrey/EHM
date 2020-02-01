@@ -143,12 +143,25 @@ class Ui_MainWindow(object):
     def check_conn(self):
         if not self.conn_status:
             self.database_display.hide()
+            self.actionCreate_db.setDisabled(False)
+            self.actionExit_db.setDisabled(True)
+            self.actionLoad_db.setDisabled(False)
         else:
             self.database_display.show()
+            self.actionCreate_db.setDisabled(True)
+            self.actionExit_db.setDisabled(False)
+            self.actionLoad_db.setDisabled(True)
 
     def create_db(self):
         if self.conn_status:
-            pass
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Cannot create database - database currently running")
+            msg.setInformativeText("Exit the current database and try again")
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            i = msg.exec_()
         else:
             create_db_window = QtWidgets.QDialog()
             create_db_window.ui = Form()
@@ -169,16 +182,33 @@ class Ui_MainWindow(object):
 
     def load_db(self):
         if self.conn_status:
-            pass
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Cannot load database - database currently running")
+            msg.setInformativeText("Exit the current database and try again")
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            i = msg.exec_()
         else:
             self.conn_status = True
             self.check_conn()
 
     def exit_db(self):
+        # if self.conn_status:
         if self.conn:
             self.conn.close()
         self.conn_status = False
         self.check_conn()
+        # else:
+        # msg = QtWidgets.QMessageBox()
+        # msg.setWindowTitle("Error")
+        # msg.setText("Cannot exit database - no database loaded")
+        # msg.setInformativeText("Exit the current database and try again")
+        # msg.setIcon(QtWidgets.QMessageBox.Warning)
+        # msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        # msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+        # i = msg.exec_()
 
     def exit_app(self):
         sys.exit(app.exec_())
