@@ -60,7 +60,7 @@ def connection(dbname):
     Establishes connection with ehmtracking.db database via sqlite3.
     :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
     """
-    #dbname = 'ehmtracking.db'
+    # dbname = 'ehmtracking.db'
     conn = None
     try:
         conn = sqlite3.connect(dbname)
@@ -82,6 +82,42 @@ def create_db(conn):
     db_config.create_reggoalie_stats(conn)
     db_config.create_poffplayer_stats(conn)
     db_config.create_poffgoalie_stats(conn)
+
+
+def select_playertable(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM player")
+    return result
+
+
+def select_attributetable(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM playerattributes")
+    return result
+
+
+def select_regskaterstats(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM regplayerstats")
+    return result
+
+
+def select_poffskaterstats(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM poffplayerstats")
+    return result
+
+
+def select_reggoaliestats(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM reggoaliestats")
+    return result
+
+
+def select_poffgoaliestats(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT * FROM poffgoaliestats")
+    return result
 
 
 def import_player(conn, playeratts):
