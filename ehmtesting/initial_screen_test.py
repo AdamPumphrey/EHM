@@ -75,6 +75,7 @@ class Ui_MainWindow(object):
         self.database_display.setObjectName("database_display")
         self.database_display.setColumnCount(0)
         self.database_display.setRowCount(0)
+        self.database_display.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.verticalLayout.addWidget(self.database_display)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
