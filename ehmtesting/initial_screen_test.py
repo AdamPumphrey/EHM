@@ -10,6 +10,7 @@
 import ehmtracker as ehm
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from create_db_window import Ui_dbname_input_dialog as Form
 
 
@@ -154,13 +155,13 @@ class Ui_MainWindow(object):
 
     def create_db(self):
         if self.conn_status:
-            msg = QtWidgets.QMessageBox()
+            msg = QMessageBox()
             msg.setWindowTitle("Error")
             msg.setText("Cannot create database - database currently running")
             msg.setInformativeText("Exit the current database and try again")
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            msg.setIcon(QMessageBox.Warning)
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setDefaultButton(QMessageBox.Ok)
             i = msg.exec_()
         else:
             create_db_window = QtWidgets.QDialog()
@@ -182,13 +183,13 @@ class Ui_MainWindow(object):
 
     def load_db(self):
         if self.conn_status:
-            msg = QtWidgets.QMessageBox()
+            msg = QMessageBox()
             msg.setWindowTitle("Error")
             msg.setText("Cannot load database - database currently running")
             msg.setInformativeText("Exit the current database and try again")
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            msg.setIcon(QMessageBox.Warning)
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setDefaultButton(QMessageBox.Ok)
             i = msg.exec_()
         else:
             self.conn_status = True
