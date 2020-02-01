@@ -10,7 +10,7 @@
 import ehmtracker as ehm
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from create_db_window import Ui_dbname_input_dialog as Form
 
 
@@ -34,6 +34,7 @@ class Ui_MainWindow(object):
         self.skaterstats_button.setMaximumSize(QtCore.QSize(150, 75))
         font = QtGui.QFont()
         font.setPointSize(12)
+        MainWindow.setWindowIcon(QtGui.QIcon('ehmtracking.ico'))
         self.skaterstats_button.setFont(font)
         self.skaterstats_button.setObjectName("skaterstats_button")
         self.gridLayout.addWidget(self.skaterstats_button, 0, 3, 1, 1)
@@ -85,6 +86,8 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.menuFile.setFont(font)
         self.menuFile.setObjectName("menuFile")
+        self.menuImport = QtWidgets.QMenu(self.menubar)
+        self.menuImport.setObjectName("menuImport")
         self.menuView = QtWidgets.QMenu(self.menubar)
         self.menuView.setObjectName("menuView")
         self.menuGraph = QtWidgets.QMenu(self.menubar)
@@ -101,6 +104,10 @@ class Ui_MainWindow(object):
         self.actionExit_db.setObjectName("actionExit_db")
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
+        self.actionImport_Players = QtWidgets.QAction(MainWindow)
+        self.actionImport_Players.setObjectName("actionImport_Players")
+        self.actionImport_Stats = QtWidgets.QAction(MainWindow)
+        self.actionImport_Stats.setObjectName("actionImport_Stats")
         self.actionPlayers = QtWidgets.QAction(MainWindow)
         self.actionPlayers.setObjectName("actionPlayers")
         self.actionAttributes = QtWidgets.QAction(MainWindow)
@@ -120,6 +127,8 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionExit_db)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
+        self.menuImport.addAction(self.actionImport_Players)
+        self.menuImport.addAction(self.actionImport_Stats)
         self.menuView.addAction(self.actionPlayers)
         self.menuView.addAction(self.actionAttributes)
         self.menuView.addAction(self.actionSkater_Stats)
@@ -128,6 +137,7 @@ class Ui_MainWindow(object):
         self.menuGraph.addAction(self.actionEdit_Graph)
         self.menuGraph.addAction(self.actionSave_Graph)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuImport.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuGraph.menuAction())
 
@@ -175,7 +185,14 @@ class Ui_MainWindow(object):
                         print(text)
                         self.conn = ehm.connection(text)
                         if not self.conn:
-                            print('Error connecting to database')
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Error")
+                            msg.setText("Error connecting to database")
+                            # msg.setInformativeText("Exit the current database and try again")
+                            msg.setIcon(QMessageBox.Warning)
+                            msg.setStandardButtons(QMessageBox.Ok)
+                            msg.setDefaultButton(QMessageBox.Ok)
+                            i = msg.exec_()
                         ehm.create_db(self.conn)
                         self.db_name = text
                     self.conn_status = True
@@ -192,27 +209,45 @@ class Ui_MainWindow(object):
             msg.setDefaultButton(QMessageBox.Ok)
             i = msg.exec_()
         else:
-            self.conn_status = True
-            self.check_conn()
+            filename = QFileDialog.getOpenFileName(MainWindow, 'Open File')
+            if filename[0]:
+                self.db_name = filename[0]
+                self.conn = ehm.connection(filename[0])
+                result = ehm.select_playertable(self.conn)
+                self.database_display.setRowCount(0)
+                self.database_display.setColumnCount(9)
+                #self.database_display.setHorizontalHeaderLabels([''])
+                for row_number, row_data in enumerate(result):
+                    self.database_display.insertRow(row_number)
+                    for column_number, data in enumerate(row_data):
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                self.conn_status = True
+                self.check_conn()
 
     def exit_db(self):
         # if self.conn_status:
         if self.conn:
+            self.conn.commit()
             self.conn.close()
-        self.conn_status = False
-        self.check_conn()
-        # else:
-        # msg = QtWidgets.QMessageBox()
-        # msg.setWindowTitle("Error")
-        # msg.setText("Cannot exit database - no database loaded")
-        # msg.setInformativeText("Exit the current database and try again")
-        # msg.setIcon(QtWidgets.QMessageBox.Warning)
-        # msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        # msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
-        # i = msg.exec_()
+            self.conn = None
+            self.conn_status = False
+            self.check_conn()
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Cannot exit database - no database loaded")
+            msg.setInformativeText("Exit the current database and try again")
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            i = msg.exec_()
 
     def exit_app(self):
-        sys.exit(app.exec_())
+        if self.conn:
+            self.conn.commit()
+            self.conn.close()
+            self.conn = None
+        sys.exit()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -228,6 +263,7 @@ class Ui_MainWindow(object):
         self.goaliestats_button.setStatusTip(_translate("MainWindow", "View goalie stats"))
         self.goaliestats_button.setText(_translate("MainWindow", "Goalie Stats"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuImport.setTitle(_translate("MainWindow", "Import"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuGraph.setTitle(_translate("MainWindow", "Graph"))
         self.actionCreate_db.setText(_translate("MainWindow", "Create Database"))
@@ -242,10 +278,18 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionExit.setStatusTip(_translate("MainWindow", "Exit the program"))
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
+        self.actionImport_Players.setText(_translate("MainWindow", "Import Players"))
+        self.actionImport_Players.setStatusTip(_translate("MainWindow", "Import player data"))
+        self.actionImport_Stats.setText(_translate("MainWindow", "Import Stats"))
+        self.actionImport_Stats.setStatusTip(_translate("MainWindow", "Import season stats"))
         self.actionPlayers.setText(_translate("MainWindow", "Players"))
+        self.actionPlayers.setStatusTip(_translate("MainWindow", "View players"))
         self.actionAttributes.setText(_translate("MainWindow", "Attributes"))
+        self.actionAttributes.setStatusTip(_translate("MainWindow", "View player attributes"))
         self.actionSkater_Stats.setText(_translate("MainWindow", "Skater Stats"))
+        self.actionSkater_Stats.setStatusTip(_translate("MainWindow", "View skater stats"))
         self.actionGoalie_Stats.setText(_translate("MainWindow", "Goalie Stats"))
+        self.actionGoalie_Stats.setStatusTip(_translate("MainWindow", "View goalie stats"))
         self.actionGraph_Data.setText(_translate("MainWindow", "Create Graph"))
         self.actionEdit_Graph.setText(_translate("MainWindow", "Edit Graph"))
         self.actionSave_Graph.setText(_translate("MainWindow", "Save Graph"))
