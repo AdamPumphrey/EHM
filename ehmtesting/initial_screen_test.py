@@ -19,6 +19,9 @@ class Ui_MainWindow(object):
         self.conn_status = None
         self.conn = None
         self.db_name = ''
+        self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
+                               'Position(s)']
+        self.att_headers = ['ID', '']
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -216,16 +219,24 @@ class Ui_MainWindow(object):
                 self.conn = ehm.connection(filename[0])
                 result = ehm.select_playertable(self.conn)
                 self.database_display.setRowCount(0)
-                self.database_display.setColumnCount(9)
-                self.database_display.setHorizontalHeaderLabels(['ID', 'Name', 'Nation', 'Season', 'Age', 'Team Rights',
-                                                                 'Team Playing', 'League', 'Position(s)'])
+                self.database_display.setColumnCount(8)
+                self.database_display.setHorizontalHeaderLabels(self.player_headers)
                 self.database_display.setSortingEnabled(True)
                 for row_number, row_data in enumerate(result):
                     self.database_display.insertRow(row_number)
                     for column_number, data in enumerate(row_data):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                # TODO
+                self.database_display.contextMenuEvent(self.player_rclick())
                 self.conn_status = True
                 self.check_conn()
+
+    def player_rclick(self):
+        self.player_rclickmenu = QtWidgets.QMenu(self.database_display)
+        tempAction = QtWidgets.QAction(self.player_rclickmenu)
+        tempAction.setObjectName('test')
+        self.player_rclickmenu.addAction(tempAction)
+        self.player_rclickmenu.popup(QtGui.QCursor.pos())
 
     def exit_db(self):
         # if self.conn_status:
