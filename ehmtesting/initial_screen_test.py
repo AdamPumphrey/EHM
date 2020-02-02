@@ -217,7 +217,9 @@ class Ui_MainWindow(object):
                 result = ehm.select_playertable(self.conn)
                 self.database_display.setRowCount(0)
                 self.database_display.setColumnCount(9)
-                #self.database_display.setHorizontalHeaderLabels([''])
+                self.database_display.setHorizontalHeaderLabels(['ID', 'Name', 'Nation', 'Season', 'Age', 'Team Rights',
+                                                                 'Team Playing', 'League', 'Position(s)'])
+                self.database_display.setSortingEnabled(True)
                 for row_number, row_data in enumerate(result):
                     self.database_display.insertRow(row_number)
                     for column_number, data in enumerate(row_data):
