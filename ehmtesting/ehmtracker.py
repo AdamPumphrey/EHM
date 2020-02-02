@@ -86,7 +86,9 @@ def create_db(conn):
 
 def select_playertable(conn):
     c = conn.cursor()
-    result = c.execute("SELECT * FROM player")
+    c.execute('''CREATE VIEW IF NOT EXISTS playerdisplay AS SELECT name, nationality, year, age, teamrights, teamplaying, 
+    leagueplaying, positions FROM player''')
+    result = c.execute("SELECT * FROM playerdisplay")
     return result
 
 
