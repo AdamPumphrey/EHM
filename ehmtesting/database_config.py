@@ -28,14 +28,14 @@ def create_player(conn):
 
 
 def create_regplayer_stats(conn):
-    statement = """CREATE TABLE IF NOT EXISTS regplayerstats (id integer NOT NULL, year integer NOT NULL, teamplaying 
-    text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int default 0, 
-    plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, avr real default 
-    0.00, atoi text default '00:00', hits int default 0, ppg int default 0, ppa int default 0, ppp int default 0, 
-    shg int default 0, sha int default 0, shp int default 0, gwg int default 0, fg int default 0, giveaways int 
-    default 0, takeaways int default 0, fopercent real default 0.00, shotsblocked int default 0, appt text default 
-    '00:00', apkt text default '00:00', plus int default 0, minus int default 0, firststars int default 0, PRIMARY KEY (
-    id, year, teamplaying));"""
+    statement = """CREATE TABLE IF NOT EXISTS regplayerstats (id integer NOT NULL, name text, year integer NOT NULL, 
+    teamplaying text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int 
+    default 0, plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, 
+    avr real default 0.00, atoi text default '00:00', hits int default 0, ppg int default 0, ppa int default 0, 
+    ppp int default 0, shg int default 0, sha int default 0, shp int default 0, gwg int default 0, fg int default 0, 
+    giveaways int default 0, takeaways int default 0, fopercent real default 0.00, shotsblocked int default 0, 
+    appt text default '00:00', apkt text default '00:00', plus int default 0, minus int default 0, firststars int 
+    default 0, PRIMARY KEY ( id, year, teamplaying)); """
     try:
         c = conn.cursor()
         c.execute(statement)
@@ -45,10 +45,10 @@ def create_regplayer_stats(conn):
 
 
 def create_reggoalie_stats(conn):
-    statement = """CREATE TABLE IF NOT EXISTS reggoaliestats (id integer NOT NULL, year integer NOT NULL, teamplaying 
-    text NOT NULL, gamesplayed int default 0, wins int default 0, losses int default 0, ties int default 0, 
-    shotsagainst int default 0, goalsagainst int default 0, gaa real default 0.00, svp real default 0.000, 
-    shutouts int default 0, minutes int default 0, PRIMARY KEY (id, year, teamplaying));"""
+    statement = """CREATE TABLE IF NOT EXISTS reggoaliestats (id integer NOT NULL, name text, year integer NOT NULL, 
+    teamplaying text NOT NULL, gamesplayed int default 0, wins int default 0, losses int default 0, ties int default 
+    0, shotsagainst int default 0, goalsagainst int default 0, gaa real default 0.00, svp real default 0.000, 
+    shutouts int default 0, minutes int default 0, PRIMARY KEY (id, year, teamplaying)); """
     try:
         c = conn.cursor()
         c.execute(statement)
@@ -58,10 +58,10 @@ def create_reggoalie_stats(conn):
 
 
 def create_poffgoalie_stats(conn):
-    statement = """CREATE TABLE IF NOT EXISTS poffgoaliestats (id integer NOT NULL, year integer NOT NULL, teamplaying 
-    text NOT NULL, gamesplayed int default 0, wins int default 0, losses int default 0, ties int default 0, 
-    shotsagainst int default 0, goalsagainst int default 0, gaa real default 0.00, svp real default 0.000, 
-    shutouts int default 0, minutes int default 0, PRIMARY KEY (id, year, teamplaying));"""
+    statement = """CREATE TABLE IF NOT EXISTS poffgoaliestats (id integer NOT NULL, name text, year integer NOT NULL, 
+    teamplaying text NOT NULL, gamesplayed int default 0, wins int default 0, losses int default 0, ties int default 
+    0, shotsagainst int default 0, goalsagainst int default 0, gaa real default 0.00, svp real default 0.000, 
+    shutouts int default 0, minutes int default 0, PRIMARY KEY (id, year, teamplaying)); """
     try:
         c = conn.cursor()
         c.execute(statement)
@@ -71,14 +71,14 @@ def create_poffgoalie_stats(conn):
 
 
 def create_poffplayer_stats(conn):
-    statement = """CREATE TABLE IF NOT EXISTS poffplayerstats (id integer NOT NULL, year integer NOT NULL, teamplaying 
-    text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int default 0, 
-    plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, avr real default 
-    0.00, atoi text default '00:00', hits int default 0, ppg int default 0, ppa int default 0, ppp int default 0, 
-    shg int default 0, sha int default 0, shp int default 0, gwg int default 0, fg int default 0, giveaways int 
-    default 0, takeaways int default 0, fopercent real default 0.00, shotsblocked int default 0, appt text default 
-    '00:00', apkt text default '00:00', plus int default 0, minus int default 0, firststars int default 0, PRIMARY KEY (
-    id, year, teamplaying));"""
+    statement = """CREATE TABLE IF NOT EXISTS poffplayerstats (id integer NOT NULL, name text, year integer NOT NULL, 
+    teamplaying text NOT NULL, gamesplayed int default 0, goals int default 0, assists int default 0, points int 
+    default 0, plusminus int default 0, pims int default 0, sog int default 0, shotpercent real default 0.00, 
+    avr real default 0.00, atoi text default '00:00', hits int default 0, ppg int default 0, ppa int default 0, 
+    ppp int default 0, shg int default 0, sha int default 0, shp int default 0, gwg int default 0, fg int default 0, 
+    giveaways int default 0, takeaways int default 0, fopercent real default 0.00, shotsblocked int default 0, 
+    appt text default '00:00', apkt text default '00:00', plus int default 0, minus int default 0, firststars int 
+    default 0, PRIMARY KEY ( id, year, teamplaying)); """
     try:
         c = conn.cursor()
         c.execute(statement)
@@ -88,7 +88,7 @@ def create_poffplayer_stats(conn):
 
 
 def create_player_attributes(conn):
-    statement = """CREATE TABLE IF NOT EXISTS playerattributes (id integer NOT NULL, year integer NOT NULL, 
+    statement = """CREATE TABLE IF NOT EXISTS playerattributes (id integer NOT NULL, name text, year integer NOT NULL, 
     teamplaying text NOT NULL, determination integer default 1, aggression integer default 1, anticipation integer 
     default 1, bravery integer default 1, flair integer default 1, influence integer default 1, teamwork integer 
     default 1, creativity integer default 1, workrate integer default 1, acceleration integer default 1, 
