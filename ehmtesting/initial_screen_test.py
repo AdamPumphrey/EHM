@@ -19,6 +19,7 @@ class Ui_MainWindow(object):
         self.conn_status = None
         self.conn = None
         self.db_name = ''
+        self.current_player = None
         self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
                                'Position(s)']
         self.att_headers = ['ID', '']
@@ -81,6 +82,9 @@ class Ui_MainWindow(object):
         self.database_display.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.verticalLayout.addWidget(self.database_display)
         MainWindow.setCentralWidget(self.centralwidget)
+        # self.database_display.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        # self.database_display.customContextMenuRequested.connect(self.genplayermenu)
+        # self.database_display.viewport().installEventFilter(self.database_display)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 21))
         self.menubar.setObjectName("menubar")
@@ -148,6 +152,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        # self.playermenu = QtWidgets.QMenu()
+        # self.actionTest = QtWidgets.QAction(self.database_display)
+        # self.actionTest.setObjectName("actionTest")
+        # self.playermenu.addAction(self.actionTest)
+
         db_name = 'ehmtracking.db'
         self.check_conn()
         self.actionCreate_db.triggered.connect(lambda: self.create_db())
@@ -199,6 +208,19 @@ class Ui_MainWindow(object):
                             i = msg.exec_()
                         ehm.create_db(self.conn)
                         self.db_name = text
+                    else:
+                        self.conn = ehm.connection(text)
+                        if not self.conn:
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Error")
+                            msg.setText("Error connecting to database")
+                            # msg.setInformativeText("Exit the current database and try again")
+                            msg.setIcon(QMessageBox.Warning)
+                            msg.setStandardButtons(QMessageBox.Ok)
+                            msg.setDefaultButton(QMessageBox.Ok)
+                            i = msg.exec_()
+                        ehm.create_db(self.conn)
+                        self.db_name = text
                     self.conn_status = True
                     self.check_conn()
 
@@ -226,17 +248,8 @@ class Ui_MainWindow(object):
                     self.database_display.insertRow(row_number)
                     for column_number, data in enumerate(row_data):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                # TODO
-                self.database_display.contextMenuEvent(self.player_rclick())
                 self.conn_status = True
                 self.check_conn()
-
-    def player_rclick(self):
-        self.player_rclickmenu = QtWidgets.QMenu(self.database_display)
-        tempAction = QtWidgets.QAction(self.player_rclickmenu)
-        tempAction.setObjectName('test')
-        self.player_rclickmenu.addAction(tempAction)
-        self.player_rclickmenu.popup(QtGui.QCursor.pos())
 
     def exit_db(self):
         # if self.conn_status:
