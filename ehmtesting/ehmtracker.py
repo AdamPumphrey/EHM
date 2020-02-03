@@ -86,38 +86,121 @@ def create_db(conn):
 
 def select_playertable(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS playerdisplay AS SELECT name, nationality, year, age, teamrights, teamplaying, 
-    leagueplaying, positions FROM player''')
+    c.execute('''CREATE VIEW IF NOT EXISTS playerdisplay AS SELECT name, nationality, year, age, teamrights, 
+    teamplaying, leagueplaying, positions FROM player''')
     result = c.execute("SELECT * FROM playerdisplay")
     return result
 
 
+def delete_playertableview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS playerdisplay''')
+
+
 def select_attributetable(conn):
     c = conn.cursor()
-    result = c.execute("SELECT * FROM playerattributes")
+    c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT player.name as name, player.teamplaying as team, 
+    player.leagueplaying as league, player.year as year, playerattributes.determination, playerattributes.aggression, 
+    playerattributes.anticipation, playerattributes.bravery, playerattributes.flair, playerattributes.influence, 
+    playerattributes.teamwork, playerattributes.creativity, playerattributes.workrate, playerattributes.acceleration, 
+    playerattributes.agility, playerattributes.balance, playerattributes.hitting, playerattributes.speed, 
+    playerattributes.stamina, playerattributes.strength, playerattributes.checking, playerattributes.deflections, 
+    playerattributes.deking, playerattributes.faceoffs, playerattributes.offthepuck, playerattributes.passing, 
+    playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot, 
+    playerattributes.stickhandling, playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, 
+    playerattributes.reboundcontrol, playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER 
+    JOIN player ON player.id WHERE playerattributes.id = player.id''')
+    result = c.execute("SELECT * FROM attdisplay")
     return result
+
+
+def delete_attview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS attdisplay''')
 
 
 def select_basic_regskaterstats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS regbasicstatdisplay AS SELECT name, year, teamplaying, gamesplayed, goals, 
-    assists, leagueplaying, positions FROM player''')
+    c.execute('''CREATE VIEW IF NOT EXISTS regbasicstatdisplay AS SELECT player.name, player.teamplaying, 
+    player.leagueplaying, regplayerstats.year, regplayerstats.gamesplayed, regplayerstats.goals, 
+    regplayerstats.assists, regplayerstats.points, regplayerstats.plusminus, regplayerstats.pims, regplayerstats.sog, 
+    regplayerstats.shotpercent, regplayerstats.avr, regplayerstats.atoi, regplayerstats.hits FROM regplayerstats 
+    INNER JOIN player ON player.id WHERE regplayerstats.id = player.id''')
     result = c.execute("SELECT * FROM regbasicstatdisplay")
     # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
     # 'Sh%', 'AvR', 'ATOI', 'HT']
     return result
 
 
-def select_poffskaterstats(conn):
+def delete_regbasicstatview(conn):
     c = conn.cursor()
-    result = c.execute("SELECT * FROM poffplayerstats")
+    c.execute('''DROP VIEW IF EXISTS regbasicstatdisplay''')
+
+
+def select_adv_regskaterstats(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS regadvstatdisplay AS SELECT player.name, player.teamplaying, 
+    player.leagueplaying, regplayerstats.year, regplayerstats.gamesplayed, regplayerstats.ppg, regplayerstats.ppa, 
+    regplayerstats.ppp, regplayerstats.shg, regplayerstats.sha, regplayerstats.shp, regplayerstats.gwg, 
+    regplayerstats.fg, regplayerstats.giveaways, regplayerstats.takeaways, regplayerstats.fopercent, 
+    regplayerstats.shotsblocked, regplayerstats.appt, regplayerstats.apkt, regplayerstats.plus, regplayerstats.minus, 
+    regplayerstats.firststars FROM regplayerstats INNER JOIN ON player.id WHERE regplayerstats.id = player.id''')
+    result = c.execute("SELECT * FROM regadvstatdisplay")
+    # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
+    #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
+    #  'FS']
     return result
+
+
+def delete_regadvstatview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS regadvstatdisplay''')
+    
+    
+def select_adv_poffskaterstats(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS poffadvstatdisplay AS SELECT player.name, player.teamplaying, 
+    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.ppg, poffplayerstats.ppa, 
+    poffplayerstats.ppp, poffplayerstats.shg, poffplayerstats.sha, poffplayerstats.shp, poffplayerstats.gwg, 
+    poffplayerstats.fg, poffplayerstats.giveaways, poffplayerstats.takeaways, poffplayerstats.fopercent, 
+    poffplayerstats.shotsblocked, poffplayerstats.appt, poffplayerstats.apkt, poffplayerstats.plus, poffplayerstats.minus, 
+    poffplayerstats.firststars FROM poffplayerstats INNER JOIN ON player.id WHERE poffplayerstats.id = player.id''')
+    result = c.execute("SELECT * FROM poffadvstatdisplay")
+    # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
+    #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
+    #  'FS']
+    return result
+
+
+def delete_poffadvstatview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS poffadvstatdisplay''')
+
+
+def select_basic_poffskaterstats(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS poffbasicstatdisplay AS SELECT player.name, player.teamplaying, 
+        player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.goals, 
+        poffplayerstats.assists, poffplayerstats.points, poffplayerstats.plusminus, poffplayerstats.pims, poffplayerstats.sog, 
+        poffplayerstats.shotpercent, poffplayerstats.avr, poffplayerstats.atoi, poffplayerstats.hits FROM poffplayerstats 
+        INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id''')
+    result = c.execute("SELECT * FROM poffbasicstatdisplay")
+    # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
+    # 'Sh%', 'AvR', 'ATOI', 'HT']
+    return result
+
+
+def delete_poffbasicstatview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS poffbasicstatdisplay''')
 
 
 def select_reggoaliestats(conn):
     c = conn.cursor()
-    result = c.execute("SELECT * FROM reggoaliestats")
-    return result
+    #result = c.execute('''CREATE VIEW IF NOT EXISTS reggoaliestatdisplay AS SELECT player.name, player.teamplaying, player.leagueplaying, reggoaliestats.year,''')
+    # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
+    #  'SO', 'MP']
+    #return result
 
 
 def select_poffgoaliestats(conn):
@@ -174,21 +257,21 @@ def import_player(conn, playeratts):
         # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
             c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'],
-                                                                    row['Determination'], row['Aggression'],
-                                                                    row['Anticipation'], row['Bravery'], row['Flair'],
-                                                                    row['Influence'], row['Teamwork'],
-                                                                    row['Creativity'], row['Work Rate'],
-                                                                    row['Acceleration'], row['Agility'], row['Balance'],
-                                                                    row['Hitting'], row['Speed'], row['Stamina'],
-                                                                    row['Strength'], row['Checking'],
-                                                                    row['Deflections'], row['Deking'], row['Faceoffs'],
-                                                                    row['Off The Puck'], row['Passing'],
-                                                                    row['Pokecheck'], row['Positioning'],
-                                                                    row['Slapshot'], row['Stickhandling'],
-                                                                    row['Wristshot'], row['Blocker'], row['Glove'],
-                                                                    row['Rebound Control'], row['Recovery'],
-                                                                    row['Reflexes']))
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'],
+                                                                 row['Determination'], row['Aggression'],
+                                                                 row['Anticipation'], row['Bravery'], row['Flair'],
+                                                                 row['Influence'], row['Teamwork'],
+                                                                 row['Creativity'], row['Work Rate'],
+                                                                 row['Acceleration'], row['Agility'], row['Balance'],
+                                                                 row['Hitting'], row['Speed'], row['Stamina'],
+                                                                 row['Strength'], row['Checking'],
+                                                                 row['Deflections'], row['Deking'], row['Faceoffs'],
+                                                                 row['Off The Puck'], row['Passing'],
+                                                                 row['Pokecheck'], row['Positioning'],
+                                                                 row['Slapshot'], row['Stickhandling'],
+                                                                 row['Wristshot'], row['Blocker'], row['Glove'],
+                                                                 row['Rebound Control'], row['Recovery'],
+                                                                 row['Reflexes']))
 
     conn.commit()
 
@@ -245,20 +328,20 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_regstats:
                 c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'],
-                                                            row['G'], row['A'], row['P'], row['+/-'], row['PIM'],
-                                                            row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
-                                                            row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'],
-                                                            row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
-                                                            row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
-                                                            row['-'], row['FS']))
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'],
+                                                         row['G'], row['A'], row['P'], row['+/-'], row['PIM'],
+                                                         row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
+                                                         row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'],
+                                                         row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
+                                                         row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
+                                                         row['-'], row['FS']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE regplayerstats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                c.execute('''UPDATE regplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
                 takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
-                ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
+                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
                                     row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
                                     row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'],
                                     row['FG'], row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'],
@@ -268,22 +351,22 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffstats:
                 c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'],
-                                                                  row['GP'], row['G'], row['A'], row['P'], row['+/-'],
-                                                                  row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
-                                                                  row['ATOI'], row['HT'], row['PPg'], row['PPa'],
-                                                                  row['PPp'], row['SHg'], row['SHa'], row['SHp'],
-                                                                  row['GWG'], row['FG'], row['GA'], row['TA'],
-                                                                  row['FO'], row['SB'], row['APPT'], row['APKT'],
-                                                                  row['+'], row['-'], row['FS']))
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'],
+                                                               row['GP'], row['G'], row['A'], row['P'], row['+/-'],
+                                                               row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
+                                                               row['ATOI'], row['HT'], row['PPg'], row['PPa'],
+                                                               row['PPp'], row['SHg'], row['SHa'], row['SHp'],
+                                                               row['GWG'], row['FG'], row['GA'], row['TA'],
+                                                               row['FO'], row['SB'], row['APPT'], row['APKT'],
+                                                               row['+'], row['-'], row['FS']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE poffplayerstats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                c.execute('''UPDATE poffplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
                 takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
-                ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
-                                    row['+/-'],  row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
+                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
+                                    row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
                                     row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'],
                                     row['FG'], row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'],
                                     row['+'], row['-'], row['FS'], row['Id']))
@@ -341,28 +424,28 @@ def import_goaliestats(conn, goaliestats, playoffs=0):
         if not playoffs:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_reggoalstats:
-                c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                          (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
                            row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE reggoaliestats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, 
+                c.execute('''UPDATE reggoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, 
                 wins = ?, losses = ?, ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, 
-                minutes = ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'],
-                                              row['T'], row['SHA'],  row['GA'], row['GAA'], row['SV%'], row['SO'],
+                minutes = ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'],
+                                              row['T'], row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'],
                                               row['TOI'], row['Id']))
         # playoff importing
         else:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffgoalstats:
-                c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                          (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
                            row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE poffgoaliestats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, 
+                c.execute('''UPDATE poffgoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, 
                 losses = ?, ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, minutes = ? 
-                WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
                                   row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
     conn.commit()
 
