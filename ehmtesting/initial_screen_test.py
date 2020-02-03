@@ -22,7 +22,23 @@ class Ui_MainWindow(object):
         self.current_player = None
         self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
                                'Position(s)']
-        self.att_headers = ['ID', '']
+        self.att_headers = ['Name', 'Year', 'Team', 'Determination', 'Aggression', 'Anticipation', 'Bravery', 'Flair',
+                            'Influence', 'Teamwork', 'Creativity', 'Work Rate', 'Acceleration', 'Agility', 'Balance',
+                            'Hitting', 'Speed', 'Stamina', 'Strength', 'Checking', 'Deflections', 'Deking', 'Faceoffs',
+                            'Off The Puck', 'Passing', 'Pokecheck', 'Positioning', 'Slapshot', 'Stickhandling',
+                            'Wristshot', 'Blocker', 'Glove', 'Rebound Control', 'Recovery', 'Reflexes']
+        self.techatt_headers = ['Name', 'Year', 'Team', 'Checking', 'Deflections', 'Deking', 'Faceoffs', 'Hitting',
+                                'Off The Puck', 'Passing', 'Pokecheck', 'Positioning', 'Slapshot', 'Stickhandling',
+                                'Wristshot']
+        self.mentatt_headers = ['Name', 'Year', 'Team', 'Aggression', 'Anticipation', 'Bravery', 'Creativity',
+                                'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
+        self.physatt_headers = ['Name', 'Year', 'Team', 'Acceleration', 'Agility', 'Balance', 'Speed', 'Stamina',
+                                'Strength']
+        self.playerbasicstat_headers = ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
+                                        'Sh%', 'AvR', 'ATOI', 'HT']
+        self.playeradvstat_headers = ['Name', 'Year', 'Team', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG', 'SHA', 'SHP',
+                                      'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-', 'FS']
+        self.goaliestat_headers = ['Name', 'Year', 'Team', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%', 'SO', 'MP']
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -239,17 +255,23 @@ class Ui_MainWindow(object):
             if filename[0]:
                 self.db_name = filename[0]
                 self.conn = ehm.connection(filename[0])
-                result = ehm.select_playertable(self.conn)
-                self.database_display.setRowCount(0)
-                self.database_display.setColumnCount(8)
-                self.database_display.setHorizontalHeaderLabels(self.player_headers)
-                self.database_display.setSortingEnabled(True)
-                for row_number, row_data in enumerate(result):
-                    self.database_display.insertRow(row_number)
-                    for column_number, data in enumerate(row_data):
-                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                self.show_playertable(self.conn)
                 self.conn_status = True
                 self.check_conn()
+
+    def show_playertable(self, conn):
+        result = ehm.select_playertable(conn)
+        self.database_display.setRowCount(0)
+        self.database_display.setColumnCount(8)
+        self.database_display.setHorizontalHeaderLabels(self.player_headers)
+        self.database_display.setSortingEnabled(True)
+        for row_number, row_data in enumerate(result):
+            self.database_display.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_regbasicstats(self, conn):
+        pass
 
     def exit_db(self):
         # if self.conn_status:
