@@ -60,7 +60,7 @@ def connection(dbname):
     Establishes connection with ehmtracking.db database via sqlite3.
     :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
     """
-    # dbname = 'ehmtracking.db'
+    # dbname = 'test.db'
     conn = None
     try:
         conn = sqlite3.connect(dbname)
@@ -169,8 +169,8 @@ def import_player(conn, playeratts):
                                                                                 row['Id']))
         # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
-            c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'],
+            c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'],
                                                                     row['Determination'], row['Aggression'],
                                                                     row['Anticipation'], row['Bravery'], row['Flair'],
                                                                     row['Influence'], row['Teamwork'],
@@ -240,48 +240,49 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
         if not playoffs:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_regstats:
-                c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
-                                                            row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
-                                                            row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
-                                                            row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
-                                                            row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
-                                                            row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
-                                                            row['FS']))
+                c.execute('''INSERT INTO regplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'],
+                                                            row['G'], row['A'], row['P'], row['+/-'], row['PIM'],
+                                                            row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
+                                                            row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'],
+                                                            row['SHp'], row['GWG'], row['FG'], row['GA'], row['TA'],
+                                                            row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
+                                                            row['-'], row['FS']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE regplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                c.execute('''UPDATE regplayerstats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
                 takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
-                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'], row['+/-'],
-                                    row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
-                                    row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'], row['FG'],
-                                    row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
-                                    row['-'], row['FS'], row['Id']))
+                ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
+                                    row['+/-'], row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
+                                    row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'],
+                                    row['FG'], row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'],
+                                    row['+'], row['-'], row['FS'], row['Id']))
         # playoff stat importing
         else:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffstats:
-                c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['GP'], row['G'],
-                                                            row['A'], row['P'], row['+/-'], row['PIM'], row['SOG'],
-                                                            row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
-                                                            row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'],
-                                                            row['GWG'], row['FG'], row['GA'], row['TA'], row['FO'],
-                                                            row['SB'], row['APPT'], row['APKT'], row['+'], row['-'],
-                                                            row['FS']))
+                c.execute('''INSERT INTO poffplayerstats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Name'], row['Year'], row['Team'],
+                                                                  row['GP'], row['G'], row['A'], row['P'], row['+/-'],
+                                                                  row['PIM'], row['SOG'], row['Sh%'], row['AvR'],
+                                                                  row['ATOI'], row['HT'], row['PPg'], row['PPa'],
+                                                                  row['PPp'], row['SHg'], row['SHa'], row['SHp'],
+                                                                  row['GWG'], row['FG'], row['GA'], row['TA'],
+                                                                  row['FO'], row['SB'], row['APPT'], row['APKT'],
+                                                                  row['+'], row['-'], row['FS']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE poffplayerstats SET year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
+                c.execute('''UPDATE poffplayerstats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, goals = ?, 
                 assists = ?, points = ?, plusminus = ?, pims = ?, sog = ?, shotpercent = ?, avr = ?, atoi = ?, 
                 hits = ?, ppg = ?, ppa = ?, ppp = ?, shg = ?, sha = ?, shp = ?, gwg = ?, fg = ?, giveaways = ?, 
                 takeaways = ?, fopercent = ?, shotsblocked = ?, appt = ?, apkt = ?, plus = ?, minus = ?, firststars = 
-                ? WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'], row['+/-'],
-                                    row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'], row['PPg'],
-                                    row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'], row['FG'],
-                                    row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'], row['+'],
-                                    row['-'], row['FS'], row['Id']))
+                ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['G'], row['A'], row['P'],
+                                    row['+/-'],  row['PIM'], row['SOG'], row['Sh%'], row['AvR'], row['ATOI'], row['HT'],
+                                    row['PPg'], row['PPa'], row['PPp'], row['SHg'], row['SHa'], row['SHp'], row['GWG'],
+                                    row['FG'], row['GA'], row['TA'], row['FO'], row['SB'], row['APPT'], row['APKT'],
+                                    row['+'], row['-'], row['FS'], row['Id']))
     conn.commit()
 
 
@@ -336,28 +337,29 @@ def import_goaliestats(conn, goaliestats, playoffs=0):
         if not playoffs:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_reggoalstats:
-                c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
-                           row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+                c.execute('''INSERT INTO reggoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                           row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE reggoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, losses = ?,
-                 ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, minutes = ?
-                  WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
-                                    row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
+                c.execute('''UPDATE reggoaliestats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, 
+                wins = ?, losses = ?, ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, 
+                minutes = ? WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'],
+                                              row['T'], row['SHA'],  row['GA'], row['GAA'], row['SV%'], row['SO'],
+                                              row['TOI'], row['Id']))
         # playoff importing
         else:
             # if player stats not already in table
             if (str(row['Id']), row['Year'], row['Team']) not in existing_poffgoalstats:
-                c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                          (row['Id'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
-                           row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
+                c.execute('''INSERT INTO poffgoaliestats VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (row['Id'], row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                           row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI']))
             else:
                 # player stats already in table - overwrite
-                c.execute('''UPDATE poffgoaliestats SET year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, 
+                c.execute('''UPDATE poffgoaliestats SET name = ?, year = ?, teamplaying = ?, gamesplayed = ?, wins = ?, 
                 losses = ?, ties = ?, shotsagainst = ?, goalsagainst = ?, gaa = ?, svp = ?, shutouts = ?, minutes = ? 
-                WHERE id = ?''', (row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'], row['SHA'],
-                                  row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
+                WHERE id = ?''', (row['Name'], row['Year'], row['Team'], row['GP'], row['W'], row['L'], row['T'],
+                                  row['SHA'], row['GA'], row['GAA'], row['SV%'], row['SO'], row['TOI'], row['Id']))
     conn.commit()
 
 
