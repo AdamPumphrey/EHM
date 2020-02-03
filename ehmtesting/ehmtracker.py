@@ -98,9 +98,13 @@ def select_attributetable(conn):
     return result
 
 
-def select_regskaterstats(conn):
+def select_basic_regskaterstats(conn):
     c = conn.cursor()
-    result = c.execute("SELECT * FROM regplayerstats")
+    c.execute('''CREATE VIEW IF NOT EXISTS regbasicstatdisplay AS SELECT name, year, teamplaying, gamesplayed, goals, 
+    assists, leagueplaying, positions FROM player''')
+    result = c.execute("SELECT * FROM regbasicstatdisplay")
+    # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
+    # 'Sh%', 'AvR', 'ATOI', 'HT']
     return result
 
 
