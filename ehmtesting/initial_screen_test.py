@@ -103,6 +103,13 @@ class Ui_MainWindow(object):
         # self.database_display.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # self.database_display.customContextMenuRequested.connect(self.genplayermenu)
         # self.database_display.viewport().installEventFilter(self.database_display)
+        self.db_status_label = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.db_status_label.setFont(font)
+        self.db_status_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.db_status_label.setObjectName("db_status_label")
+        self.verticalLayout.addWidget(self.db_status_label)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 21))
         self.menubar.setObjectName("menubar")
@@ -116,6 +123,8 @@ class Ui_MainWindow(object):
         self.menuImport.setObjectName("menuImport")
         self.menuView = QtWidgets.QMenu(self.menubar)
         self.menuView.setObjectName("menuView")
+        self.menuSkater_Stats = QtWidgets.QMenu(self.menuView)
+        self.menuSkater_Stats.setObjectName("menuSkater_Stats")
         self.menuGraph = QtWidgets.QMenu(self.menubar)
         self.menuGraph.setObjectName("menuGraph")
         MainWindow.setMenuBar(self.menubar)
@@ -148,6 +157,10 @@ class Ui_MainWindow(object):
         self.actionEdit_Graph.setObjectName("actionEdit_Graph")
         self.actionSave_Graph = QtWidgets.QAction(MainWindow)
         self.actionSave_Graph.setObjectName("actionSave_Graph")
+        self.actionBasic_Stats = QtWidgets.QAction(MainWindow)
+        self.actionBasic_Stats.setObjectName("actionBasic_Stats")
+        self.actionAdvanced_Stats = QtWidgets.QAction(MainWindow)
+        self.actionAdvanced_Stats.setObjectName("actionAdvanced_Stats")
         self.menuFile.addAction(self.actionCreate_db)
         self.menuFile.addAction(self.actionLoad_db)
         self.menuFile.addAction(self.actionExit_db)
@@ -155,9 +168,11 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionExit)
         self.menuImport.addAction(self.actionImport_Players)
         self.menuImport.addAction(self.actionImport_Stats)
+        self.menuSkater_Stats.addAction(self.actionBasic_Stats)
+        self.menuSkater_Stats.addAction(self.actionAdvanced_Stats)
         self.menuView.addAction(self.actionPlayers)
         self.menuView.addAction(self.actionAttributes)
-        self.menuView.addAction(self.actionSkater_Stats)
+        self.menuView.addAction(self.menuSkater_Stats.menuAction())
         self.menuView.addAction(self.actionGoalie_Stats)
         self.menuGraph.addAction(self.actionGraph_Data)
         self.menuGraph.addAction(self.actionEdit_Graph)
@@ -175,24 +190,32 @@ class Ui_MainWindow(object):
         # self.actionTest.setObjectName("actionTest")
         # self.playermenu.addAction(self.actionTest)
 
-        db_name = 'ehmtracking.db'
+        # db_name = 'ehmtracking.db'
         self.check_conn()
         self.actionCreate_db.triggered.connect(lambda: self.create_db())
         self.actionLoad_db.triggered.connect(lambda: self.load_db())
         self.actionExit_db.triggered.connect(lambda: self.exit_db())
         self.actionExit.triggered.connect(lambda: self.exit_app())
+        self.players_button.clicked.connect(lambda: self.show_playertable(self.conn))
+        self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
             self.database_display.hide()
+            self.db_status_label.show()
             self.actionCreate_db.setDisabled(False)
             self.actionExit_db.setDisabled(True)
             self.actionLoad_db.setDisabled(False)
+            self.menuView.setDisabled(True)
+            self.menuGraph.setDisabled(True)
         else:
             self.database_display.show()
+            self.db_status_label.hide()
             self.actionCreate_db.setDisabled(True)
             self.actionExit_db.setDisabled(False)
             self.actionLoad_db.setDisabled(True)
+            self.menuView.setDisabled(False)
+            self.menuGraph.setDisabled(False)
 
     def create_db(self):
         if self.conn_status:
@@ -262,18 +285,28 @@ class Ui_MainWindow(object):
                 self.check_conn()
 
     def show_playertable(self, conn):
-        result = ehm.select_playertable(conn)
-        self.database_display.setRowCount(0)
-        self.database_display.setColumnCount(len(self.player_headers))
-        self.database_display.setHorizontalHeaderLabels(self.player_headers)
-        self.database_display.setSortingEnabled(True)
-        for row_number, row_data in enumerate(result):
-            self.database_display.insertRow(row_number)
-            for column_number, data in enumerate(row_data):
-                self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        if conn:
+            result = ehm.select_playertable(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.player_headers))
+            self.database_display.setHorizontalHeaderLabels(self.player_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
     def show_regbasicstats(self, conn):
-        pass
+        if conn:
+            result = ehm.select_basic_regskaterstats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.playerbasicstat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
     def exit_db(self):
         # if self.conn_status:
@@ -303,6 +336,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "EHMtracker"))
+        self.db_status_label.setText(_translate("MainWindow", "Database Not Loaded"))
         self.skaterstats_button.setStatusTip(_translate("MainWindow", "View skater stats"))
         self.skaterstats_button.setText(_translate("MainWindow", "Skater Stats"))
         self.players_button.setStatusTip(_translate("MainWindow", "View players"))
@@ -316,6 +350,7 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuImport.setTitle(_translate("MainWindow", "Import"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
+        self.menuSkater_Stats.setTitle(_translate("MainWindow", "Skater Stats"))
         self.menuGraph.setTitle(_translate("MainWindow", "Graph"))
         self.actionCreate_db.setText(_translate("MainWindow", "Create Database"))
         self.actionCreate_db.setStatusTip(_translate("MainWindow", "Create a new database"))
@@ -344,6 +379,8 @@ class Ui_MainWindow(object):
         self.actionGraph_Data.setText(_translate("MainWindow", "Create Graph"))
         self.actionEdit_Graph.setText(_translate("MainWindow", "Edit Graph"))
         self.actionSave_Graph.setText(_translate("MainWindow", "Save Graph"))
+        self.actionBasic_Stats.setText(_translate("MainWindow", "Basic Stats"))
+        self.actionAdvanced_Stats.setText(_translate("MainWindow", "Advanced Stats"))
 
 
 if __name__ == "__main__":
