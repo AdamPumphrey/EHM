@@ -192,7 +192,7 @@ def select_adv_regskaterstats(conn):
     regplayerstats.ppp, regplayerstats.shg, regplayerstats.sha, regplayerstats.shp, regplayerstats.gwg, 
     regplayerstats.fg, regplayerstats.giveaways, regplayerstats.takeaways, regplayerstats.fopercent, 
     regplayerstats.shotsblocked, regplayerstats.appt, regplayerstats.apkt, regplayerstats.plus, regplayerstats.minus, 
-    regplayerstats.firststars FROM regplayerstats INNER JOIN ON player.id WHERE regplayerstats.id = player.id''')
+    regplayerstats.firststars FROM regplayerstats INNER JOIN player ON player.id WHERE regplayerstats.id = player.id''')
     result = c.execute("SELECT * FROM regadvstatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
     #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
@@ -208,11 +208,12 @@ def delete_regadvstatview(conn):
 def select_adv_poffskaterstats(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS poffadvstatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.ppg, poffplayerstats.ppa, 
-    poffplayerstats.ppp, poffplayerstats.shg, poffplayerstats.sha, poffplayerstats.shp, poffplayerstats.gwg, 
-    poffplayerstats.fg, poffplayerstats.giveaways, poffplayerstats.takeaways, poffplayerstats.fopercent, 
-    poffplayerstats.shotsblocked, poffplayerstats.appt, poffplayerstats.apkt, poffplayerstats.plus, poffplayerstats.minus, 
-    poffplayerstats.firststars FROM poffplayerstats INNER JOIN ON player.id WHERE poffplayerstats.id = player.id''')
+    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.ppg, 
+    poffplayerstats.ppa, poffplayerstats.ppp, poffplayerstats.shg, poffplayerstats.sha, poffplayerstats.shp, 
+    poffplayerstats.gwg, poffplayerstats.fg, poffplayerstats.giveaways, poffplayerstats.takeaways, 
+    poffplayerstats.fopercent, poffplayerstats.shotsblocked, poffplayerstats.appt, poffplayerstats.apkt, 
+    poffplayerstats.plus, poffplayerstats.minus, poffplayerstats.firststars FROM poffplayerstats INNER JOIN player ON 
+    player.id WHERE poffplayerstats.id = player.id''')
     result = c.execute("SELECT * FROM poffadvstatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
     #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
@@ -228,10 +229,10 @@ def delete_poffadvstatview(conn):
 def select_basic_poffskaterstats(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS poffbasicstatdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.goals, 
-        poffplayerstats.assists, poffplayerstats.points, poffplayerstats.plusminus, poffplayerstats.pims, poffplayerstats.sog, 
-        poffplayerstats.shotpercent, poffplayerstats.avr, poffplayerstats.atoi, poffplayerstats.hits FROM poffplayerstats 
-        INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id''')
+    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.goals, 
+    poffplayerstats.assists, poffplayerstats.points, poffplayerstats.plusminus, poffplayerstats.pims, 
+    poffplayerstats.sog, poffplayerstats.shotpercent, poffplayerstats.avr, poffplayerstats.atoi, poffplayerstats.hits 
+    FROM poffplayerstats INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id''')
     result = c.execute("SELECT * FROM poffbasicstatdisplay")
     # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
     # 'Sh%', 'AvR', 'ATOI', 'HT']
@@ -246,10 +247,10 @@ def delete_poffbasicstatview(conn):
 def select_reggoaliestats(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS reggoaliestatdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, reggoaliestats.year, reggoaliestats.gamesplayed, reggoaliestats.wins, reggoaliestats.losses,
-        reggoaliestats.ties, reggoaliestats.shotsagainst, reggoaliestats.goalsagainst, reggoaliestats.gaa,
-        reggoaliestats.svp, reggoaliestats.shutouts, reggoaliestats.minutes FROM reggoaliestats INNER JOIN player ON
-        player.id WHERE reggoaliestats.id = player.id''')
+    player.leagueplaying, reggoaliestats.year, reggoaliestats.gamesplayed, reggoaliestats.wins, 
+    reggoaliestats.losses, reggoaliestats.ties, reggoaliestats.shotsagainst, reggoaliestats.goalsagainst, 
+    reggoaliestats.gaa, reggoaliestats.svp, reggoaliestats.shutouts, reggoaliestats.minutes FROM reggoaliestats INNER 
+    JOIN player ON player.id WHERE reggoaliestats.id = player.id''')
     result = c.execute("SELECT * FROM reggoaliestatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
     #  'SO', 'MP']
