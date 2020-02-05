@@ -127,6 +127,8 @@ class Ui_MainWindow(object):
         self.menuRegular_Season.setObjectName("menuRegular_Season")
         self.menuPlayoffs = QtWidgets.QMenu(self.menuView)
         self.menuPlayoffs.setObjectName("menuPlayoffs")
+        self.menuAttributes = QtWidgets.QMenu(self.menuView)
+        self.menuAttributes.setObjectName("menuAttributes")
         # self.menuSkater_Stats = QtWidgets.QMenu(self.menuView)
         # self.menuSkater_Stats.setObjectName("menuSkater_Stats")
         self.menuGraph = QtWidgets.QMenu(self.menubar)
@@ -177,6 +179,12 @@ class Ui_MainWindow(object):
         self.actionPoff_Skater_Advanced.setObjectName("actionPoff_Skater_Advanced")
         self.actionPoff_Goalie = QtWidgets.QAction(MainWindow)
         self.actionPoff_Goalie.setObjectName("actionPoff_Goalie")
+        self.actionTechnical = QtWidgets.QAction(MainWindow)
+        self.actionTechnical.setObjectName("actionTechnical")
+        self.actionMental = QtWidgets.QAction(MainWindow)
+        self.actionMental.setObjectName("actionMental")
+        self.actionPhysical = QtWidgets.QAction(MainWindow)
+        self.actionPhysical.setObjectName("actionPhysical")
         self.menuFile.addAction(self.actionCreate_db)
         self.menuFile.addAction(self.actionLoad_db)
         self.menuFile.addAction(self.actionExit_db)
@@ -192,8 +200,11 @@ class Ui_MainWindow(object):
         self.menuPlayoffs.addAction(self.actionPoff_Skater_Basic)
         self.menuPlayoffs.addAction(self.actionPoff_Skater_Advanced)
         self.menuPlayoffs.addAction(self.actionPoff_Goalie)
+        self.menuAttributes.addAction(self.actionTechnical)
+        self.menuAttributes.addAction(self.actionMental)
+        self.menuAttributes.addAction(self.actionPhysical)
         self.menuView.addAction(self.actionPlayers)
-        self.menuView.addAction(self.actionAttributes)
+        self.menuView.addAction(self.menuAttributes.menuAction())
         self.menuView.addSeparator()
         self.menuView.addAction(self.menuRegular_Season.menuAction())
         self.menuView.addAction(self.menuPlayoffs.menuAction())
@@ -228,6 +239,13 @@ class Ui_MainWindow(object):
         self.actionPoff_Skater_Basic.triggered.connect(lambda: self.show_poffbasicstats(self.conn))
         self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn))
         self.actionPoff_Skater_Advanced.triggered.connect(lambda: self.show_poffadvstats(self.conn))
+        self.goaliestats_button.clicked.connect(lambda: self.show_reggoalstats(self.conn))
+        self.actionReg_Goalie.triggered.connect(lambda: self.show_reggoalstats(self.conn))
+        self.actionPoff_Goalie.triggered.connect(lambda: self.show_poffgoalstats(self.conn))
+        self.attributes_button.clicked.connect(lambda: self.show_attributetable(self.conn))
+        self.actionTechnical.triggered.connect(lambda: self.show_techattributetable(self.conn))
+        self.actionMental.triggered.connect(lambda: self.show_mentattributetable(self.conn))
+        self.actionPhysical.triggered.connect(lambda: self.show_physattributetable(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
@@ -326,6 +344,66 @@ class Ui_MainWindow(object):
                 for column_number, data in enumerate(row_data):
                     self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
+    def show_attributetable(self, conn):
+        if conn:
+            result = ehm.select_attributetable(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.att_headers))
+            self.database_display.setHorizontalHeaderLabels(self.att_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 36)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_techattributetable(self, conn):
+        if conn:
+            result = ehm.select_techatts(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.techatt_headers))
+            self.database_display.setHorizontalHeaderLabels(self.techatt_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 16)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_mentattributetable(self, conn):
+        if conn:
+            result = ehm.select_mentatts(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.mentatt_headers))
+            self.database_display.setHorizontalHeaderLabels(self.mentatt_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 13)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_physattributetable(self, conn):
+        if conn:
+            result = ehm.select_physatts(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.physatt_headers))
+            self.database_display.setHorizontalHeaderLabels(self.physatt_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 10)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
     def show_regbasicstats(self, conn):
         if conn:
             result = ehm.select_basic_regskaterstats(conn)
@@ -336,7 +414,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                    if column_number in (range(3, 13), 14):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -351,7 +429,22 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                    if column_number in (range(3, 15), 16, range(19, 22)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_reggoalstats(self, conn):
+        if conn:
+            result = ehm.select_reggoaliestats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.goaliestat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 14)):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -366,7 +459,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                    if column_number in (range(3, 13), 14):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -381,7 +474,22 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                    if column_number in (range(3, 15), 16, range(19, 22)):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_poffgoalstats(self, conn):
+        if conn:
+            result = ehm.select_poffgoaliestats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.goaliestat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (range(3, 14)):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -430,6 +538,7 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuRegular_Season.setTitle(_translate("MainWindow", "Regular Season Stats"))
         self.menuPlayoffs.setTitle(_translate("MainWindow", "Playoff Stats"))
+        self.menuAttributes.setTitle(_translate("MainWindow", "Attributes"))
         # self.menuSkater_Stats.setTitle(_translate("MainWindow", "Skater Stats"))
         self.menuGraph.setTitle(_translate("MainWindow", "Graph"))
         self.actionCreate_db.setText(_translate("MainWindow", "Create Database"))
@@ -474,6 +583,12 @@ class Ui_MainWindow(object):
         self.actionPoff_Skater_Advanced.setText(_translate("MainWindow", "Skater - Advanced"))
         self.actionPoff_Goalie.setStatusTip(_translate("MainWindow", "View goalie playoff stats"))
         self.actionPoff_Goalie.setText(_translate("MainWindow", "Goalie"))
+        self.actionTechnical.setStatusTip(_translate("MainWindow", "View technical attributes"))
+        self.actionTechnical.setText(_translate("MainWindow", "Technical"))
+        self.actionMental.setStatusTip(_translate("MainWindow", "View mental attributes"))
+        self.actionMental.setText(_translate("MainWindow", "Mental"))
+        self.actionPhysical.setStatusTip(_translate("MainWindow", "View physical attributes"))
+        self.actionPhysical.setText(_translate("MainWindow", "Physical"))
 
 
 class QCustomTableWidgetItem(QtWidgets.QTableWidgetItem):
