@@ -225,7 +225,9 @@ class Ui_MainWindow(object):
         self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
         self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn))
         self.actionReg_Skater_Basic.triggered.connect(lambda: self.show_regbasicstats(self.conn))
+        self.actionPoff_Skater_Basic.triggered.connect(lambda: self.show_poffbasicstats(self.conn))
         self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn))
+        self.actionPoff_Skater_Advanced.triggered.connect(lambda: self.show_poffadvstats(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
@@ -342,6 +344,36 @@ class Ui_MainWindow(object):
     def show_regadvstats(self, conn):
         if conn:
             result = ehm.select_adv_regskaterstats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.playeradvstat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_poffbasicstats(self, conn):
+        if conn:
+            result = ehm.select_basic_poffskaterstats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.playerbasicstat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_poffadvstats(self, conn):
+        if conn:
+            result = ehm.select_adv_poffskaterstats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playeradvstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
