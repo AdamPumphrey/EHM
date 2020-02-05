@@ -123,7 +123,7 @@ def select_techatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS techattdisplay AS SELECT player.name, player.teamplaying, 
         player.leagueplaying, player.year, playerattributes.checking, playerattributes.deflections, 
-        playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, playerattributes.offthepuck
+        playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, playerattributes.offthepuck,
         playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot,
         playerattributes.stickhandling, playerattributes.wristshot FROM playerattributes INNER JOIN player ON player.id 
         WHERE playerattributes.id = player.id''')
@@ -267,7 +267,7 @@ def select_poffgoaliestats(conn):
     c.execute('''CREATE VIEW IF NOT EXISTS poffgoaliestatdisplay AS SELECT player.name, player.teamplaying, 
         player.leagueplaying, poffgoaliestats.year, poffgoaliestats.gamesplayed, poffgoaliestats.wins, 
         poffgoaliestats.losses, poffgoaliestats.ties, poffgoaliestats.shotsagainst, poffgoaliestats.goalsagainst, 
-        poffgoaliestats.gaa, poffgoaliestats.svp, poffgoaliestats.shutouts, poffgoaliestats.minutes FROM reggoaliestats 
+        poffgoaliestats.gaa, poffgoaliestats.svp, poffgoaliestats.shutouts, poffgoaliestats.minutes FROM poffgoaliestats 
         INNER JOIN player ON player.id WHERE poffgoaliestats.id = player.id''')
     result = c.execute("SELECT * FROM poffgoaliestatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
