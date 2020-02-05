@@ -123,8 +123,12 @@ class Ui_MainWindow(object):
         self.menuImport.setObjectName("menuImport")
         self.menuView = QtWidgets.QMenu(self.menubar)
         self.menuView.setObjectName("menuView")
-        self.menuSkater_Stats = QtWidgets.QMenu(self.menuView)
-        self.menuSkater_Stats.setObjectName("menuSkater_Stats")
+        self.menuRegular_Season = QtWidgets.QMenu(self.menuView)
+        self.menuRegular_Season.setObjectName("menuRegular_Season")
+        self.menuPlayoffs = QtWidgets.QMenu(self.menuView)
+        self.menuPlayoffs.setObjectName("menuPlayoffs")
+        # self.menuSkater_Stats = QtWidgets.QMenu(self.menuView)
+        # self.menuSkater_Stats.setObjectName("menuSkater_Stats")
         self.menuGraph = QtWidgets.QMenu(self.menubar)
         self.menuGraph.setObjectName("menuGraph")
         MainWindow.setMenuBar(self.menubar)
@@ -148,19 +152,31 @@ class Ui_MainWindow(object):
         self.actionAttributes = QtWidgets.QAction(MainWindow)
         self.actionAttributes.setObjectName("actionAttributes")
         self.actionSkater_Stats = QtWidgets.QAction(MainWindow)
-        self.actionSkater_Stats.setObjectName("actionSkater_Stats")
-        self.actionGoalie_Stats = QtWidgets.QAction(MainWindow)
-        self.actionGoalie_Stats.setObjectName("actionGoalie_Stats")
+        # self.actionSkater_Stats.setObjectName("actionSkater_Stats")
+        # self.actionGoalie_Stats = QtWidgets.QAction(MainWindow)
+        # self.actionGoalie_Stats.setObjectName("actionGoalie_Stats")
         self.actionGraph_Data = QtWidgets.QAction(MainWindow)
         self.actionGraph_Data.setObjectName("actionGraph_Data")
         self.actionEdit_Graph = QtWidgets.QAction(MainWindow)
         self.actionEdit_Graph.setObjectName("actionEdit_Graph")
         self.actionSave_Graph = QtWidgets.QAction(MainWindow)
         self.actionSave_Graph.setObjectName("actionSave_Graph")
-        self.actionBasic_Stats = QtWidgets.QAction(MainWindow)
-        self.actionBasic_Stats.setObjectName("actionBasic_Stats")
-        self.actionAdvanced_Stats = QtWidgets.QAction(MainWindow)
-        self.actionAdvanced_Stats.setObjectName("actionAdvanced_Stats")
+        # self.actionBasic_Stats = QtWidgets.QAction(MainWindow)
+        # self.actionBasic_Stats.setObjectName("actionBasic_Stats")
+        # self.actionAdvanced_Stats = QtWidgets.QAction(MainWindow)
+        # self.actionAdvanced_Stats.setObjectName("actionAdvanced_Stats")
+        self.actionReg_Skater_Basic = QtWidgets.QAction(MainWindow)
+        self.actionReg_Skater_Basic.setObjectName("actionReg_Skater_Basic")
+        self.actionReg_Skater_Advanced = QtWidgets.QAction(MainWindow)
+        self.actionReg_Skater_Advanced.setObjectName("actionReg_Skater_Advanced")
+        self.actionReg_Goalie = QtWidgets.QAction(MainWindow)
+        self.actionReg_Goalie.setObjectName("actionReg_Goalie")
+        self.actionPoff_Skater_Basic = QtWidgets.QAction(MainWindow)
+        self.actionPoff_Skater_Basic.setObjectName("actionPoff_Skater_Basic")
+        self.actionPoff_Skater_Advanced = QtWidgets.QAction(MainWindow)
+        self.actionPoff_Skater_Advanced.setObjectName("actionPoff_Skater_Advanced")
+        self.actionPoff_Goalie = QtWidgets.QAction(MainWindow)
+        self.actionPoff_Goalie.setObjectName("actionPoff_Goalie")
         self.menuFile.addAction(self.actionCreate_db)
         self.menuFile.addAction(self.actionLoad_db)
         self.menuFile.addAction(self.actionExit_db)
@@ -168,12 +184,21 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionExit)
         self.menuImport.addAction(self.actionImport_Players)
         self.menuImport.addAction(self.actionImport_Stats)
-        self.menuSkater_Stats.addAction(self.actionBasic_Stats)
-        self.menuSkater_Stats.addAction(self.actionAdvanced_Stats)
+        # self.menuSkater_Stats.addAction(self.actionBasic_Stats)
+        # self.menuSkater_Stats.addAction(self.actionAdvanced_Stats)
+        self.menuRegular_Season.addAction(self.actionReg_Skater_Basic)
+        self.menuRegular_Season.addAction(self.actionReg_Skater_Advanced)
+        self.menuRegular_Season.addAction(self.actionReg_Goalie)
+        self.menuPlayoffs.addAction(self.actionPoff_Skater_Basic)
+        self.menuPlayoffs.addAction(self.actionPoff_Skater_Advanced)
+        self.menuPlayoffs.addAction(self.actionPoff_Goalie)
         self.menuView.addAction(self.actionPlayers)
         self.menuView.addAction(self.actionAttributes)
-        self.menuView.addAction(self.menuSkater_Stats.menuAction())
-        self.menuView.addAction(self.actionGoalie_Stats)
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.menuRegular_Season.menuAction())
+        self.menuView.addAction(self.menuPlayoffs.menuAction())
+        # self.menuView.addAction(self.menuSkater_Stats.menuAction())
+        # self.menuView.addAction(self.actionGoalie_Stats)
         self.menuGraph.addAction(self.actionGraph_Data)
         self.menuGraph.addAction(self.actionEdit_Graph)
         self.menuGraph.addAction(self.actionSave_Graph)
@@ -198,6 +223,9 @@ class Ui_MainWindow(object):
         self.actionExit.triggered.connect(lambda: self.exit_app())
         self.players_button.clicked.connect(lambda: self.show_playertable(self.conn))
         self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
+        self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn))
+        self.actionReg_Skater_Basic.triggered.connect(lambda: self.show_regbasicstats(self.conn))
+        self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
@@ -306,7 +334,25 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+    def show_regadvstats(self, conn):
+        if conn:
+            result = ehm.select_adv_regskaterstats(conn)
+            self.database_display.setRowCount(0)
+            self.database_display.setColumnCount(len(self.playeradvstat_headers))
+            self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
+            self.database_display.setSortingEnabled(True)
+            for row_number, row_data in enumerate(result):
+                self.database_display.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                        self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
+                    else:
+                        self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
     def exit_db(self):
         # if self.conn_status:
@@ -350,7 +396,9 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuImport.setTitle(_translate("MainWindow", "Import"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
-        self.menuSkater_Stats.setTitle(_translate("MainWindow", "Skater Stats"))
+        self.menuRegular_Season.setTitle(_translate("MainWindow", "Regular Season Stats"))
+        self.menuPlayoffs.setTitle(_translate("MainWindow", "Playoff Stats"))
+        # self.menuSkater_Stats.setTitle(_translate("MainWindow", "Skater Stats"))
         self.menuGraph.setTitle(_translate("MainWindow", "Graph"))
         self.actionCreate_db.setText(_translate("MainWindow", "Create Database"))
         self.actionCreate_db.setStatusTip(_translate("MainWindow", "Create a new database"))
@@ -374,13 +422,39 @@ class Ui_MainWindow(object):
         self.actionAttributes.setStatusTip(_translate("MainWindow", "View player attributes"))
         self.actionSkater_Stats.setText(_translate("MainWindow", "Skater Stats"))
         self.actionSkater_Stats.setStatusTip(_translate("MainWindow", "View skater stats"))
-        self.actionGoalie_Stats.setText(_translate("MainWindow", "Goalie Stats"))
-        self.actionGoalie_Stats.setStatusTip(_translate("MainWindow", "View goalie stats"))
+        # self.actionGoalie_Stats.setText(_translate("MainWindow", "Goalie Stats"))
+        # self.actionGoalie_Stats.setStatusTip(_translate("MainWindow", "View goalie stats"))
         self.actionGraph_Data.setText(_translate("MainWindow", "Create Graph"))
         self.actionEdit_Graph.setText(_translate("MainWindow", "Edit Graph"))
         self.actionSave_Graph.setText(_translate("MainWindow", "Save Graph"))
-        self.actionBasic_Stats.setText(_translate("MainWindow", "Basic Stats"))
-        self.actionAdvanced_Stats.setText(_translate("MainWindow", "Advanced Stats"))
+        # self.actionBasic_Stats.setText(_translate("MainWindow", "Basic Stats"))
+        # self.actionAdvanced_Stats.setText(_translate("MainWindow", "Advanced Stats"))
+        self.actionReg_Skater_Basic.setStatusTip(_translate("MainWindow", "View basic skater regular season stats"))
+        self.actionReg_Skater_Basic.setText(_translate("MainWindow", "Skater - Basic"))
+        self.actionReg_Skater_Advanced.setStatusTip(_translate("MainWindow",
+                                                               "View advanced skater regular season stats"))
+        self.actionReg_Skater_Advanced.setText(_translate("MainWindow", "Skater - Advanced"))
+        self.actionReg_Goalie.setStatusTip(_translate("MainWindow", "View goalie regular season stats"))
+        self.actionReg_Goalie.setText(_translate("MainWindow", "Goalie"))
+        self.actionPoff_Skater_Basic.setStatusTip(_translate("MainWindow", "View basic skater playoff stats"))
+        self.actionPoff_Skater_Basic.setText(_translate("MainWindow", "Skater - Basic"))
+        self.actionPoff_Skater_Advanced.setStatusTip(_translate("MainWindow", "View advanced skater playoff stats"))
+        self.actionPoff_Skater_Advanced.setText(_translate("MainWindow", "Skater - Advanced"))
+        self.actionPoff_Goalie.setStatusTip(_translate("MainWindow", "View goalie playoff stats"))
+        self.actionPoff_Goalie.setText(_translate("MainWindow", "Goalie"))
+
+
+class QCustomTableWidgetItem(QtWidgets.QTableWidgetItem):
+    def __init__(self, value):
+        super(QCustomTableWidgetItem, self).__init__(str('%s' % value))
+
+    def __lt__(self, other):
+        if isinstance(other, QCustomTableWidgetItem):
+            selfDataValue = float(self.data(QtCore.Qt.EditRole))
+            otherDataValue = float(other.data(QtCore.Qt.EditRole))
+            return selfDataValue < otherDataValue
+        else:
+            return QtWidgets.QTableWidgetItem.__lt__(self, other)
 
 
 if __name__ == "__main__":
