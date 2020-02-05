@@ -94,6 +94,9 @@ def parse_skaters(skaters_name):
             else:
                 pos += newpos[i] + ','
 
+        if not is_float(row['Sh%']):
+            row['Sh%'] = '0.0'
+
         # print(pos)
         row['Pos'] = pos
         playerstat_data.append(row)
@@ -104,6 +107,14 @@ def parse_skaters(skaters_name):
     #         print(item, playerstat_data[i][item])
     # /testing
     return playerstat_data
+
+
+def is_float(val):
+    try:
+        num = float(val)
+    except ValueError:
+        return False
+    return True
 
 
 def parse_goalies(goalies_name):
