@@ -14,6 +14,20 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from create_db_window import Ui_dbname_input_dialog as Form
 
 
+def drop_views(conn):
+    ehm.del_attview(conn)
+    ehm.del_playertableview(conn)
+    ehm.del_regbasicstatview(conn)
+    ehm.del_regadvstatview(conn)
+    ehm.del_poffbasicstatview(conn)
+    ehm.del_poffadvstatview(conn)
+    ehm.del_mentattdisplay(conn)
+    ehm.del_physattdisplay(conn)
+    ehm.del_techattdisplay(conn)
+    ehm.del_reggoalstatdisplay(conn)
+    ehm.del_poffgoaliestatdisplay(conn)
+
+
 class Ui_MainWindow(object):
     def __init__(self):
         self.conn_status = None
@@ -338,11 +352,12 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.player_headers))
             self.database_display.setHorizontalHeaderLabels(self.player_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
                     self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_attributetable(self, conn):
         if conn:
@@ -350,7 +365,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.att_headers))
             self.database_display.setHorizontalHeaderLabels(self.att_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -358,6 +373,7 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_techattributetable(self, conn):
         if conn:
@@ -365,7 +381,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.techatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.techatt_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -373,6 +389,7 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_mentattributetable(self, conn):
         if conn:
@@ -380,7 +397,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.mentatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.mentatt_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -388,6 +405,7 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_physattributetable(self, conn):
         if conn:
@@ -395,7 +413,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.physatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.physatt_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -403,6 +421,7 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_regbasicstats(self, conn):
         if conn:
@@ -410,14 +429,15 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playerbasicstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 13), 14):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_regadvstats(self, conn):
         if conn:
@@ -425,14 +445,15 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playeradvstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 15), 16, range(19, 22)):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_reggoalstats(self, conn):
         if conn:
@@ -440,7 +461,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.goaliestat_headers))
             self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -448,6 +469,7 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_poffbasicstats(self, conn):
         if conn:
@@ -455,14 +477,15 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playerbasicstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 13), 14):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_poffadvstats(self, conn):
         if conn:
@@ -470,14 +493,15 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playeradvstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 15), 16, range(19, 22)):
+                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def show_poffgoalstats(self, conn):
         if conn:
@@ -485,7 +509,7 @@ class Ui_MainWindow(object):
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.goaliestat_headers))
             self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
-            self.database_display.setSortingEnabled(True)
+            self.database_display.setSortingEnabled(False)
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
@@ -493,10 +517,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.database_display.setSortingEnabled(True)
 
     def exit_db(self):
         # if self.conn_status:
         if self.conn:
+            drop_views(self.conn)
             self.conn.commit()
             self.conn.close()
             self.conn = None
@@ -514,6 +540,7 @@ class Ui_MainWindow(object):
 
     def exit_app(self):
         if self.conn:
+            drop_views(self.conn)
             self.conn.commit()
             self.conn.close()
             self.conn = None
