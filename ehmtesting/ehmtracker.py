@@ -92,7 +92,7 @@ def select_playertable(conn):
     return result
 
 
-def delete_playertableview(conn):
+def del_playertableview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS playerdisplay''')
 
@@ -114,7 +114,7 @@ def select_attributetable(conn):
     return result
 
 
-def delete_attview(conn):
+def del_attview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS attdisplay''')
     
@@ -180,7 +180,7 @@ def select_basic_regskaterstats(conn):
     return result
 
 
-def delete_regbasicstatview(conn):
+def del_regbasicstatview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS regbasicstatdisplay''')
 
@@ -200,7 +200,7 @@ def select_adv_regskaterstats(conn):
     return result
 
 
-def delete_regadvstatview(conn):
+def del_regadvstatview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS regadvstatdisplay''')
     
@@ -221,7 +221,7 @@ def select_adv_poffskaterstats(conn):
     return result
 
 
-def delete_poffadvstatview(conn):
+def del_poffadvstatview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS poffadvstatdisplay''')
 
@@ -239,7 +239,7 @@ def select_basic_poffskaterstats(conn):
     return result
 
 
-def delete_poffbasicstatview(conn):
+def del_poffbasicstatview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS poffbasicstatdisplay''')
 
@@ -275,7 +275,7 @@ def select_poffgoaliestats(conn):
     return result
     
     
-def def_poffgoaliestatdisplay(conn):
+def del_poffgoaliestatdisplay(conn):
     c = conn.cursor()
     result = c.execute("DROP VIEW IF EXISTS poffgoaliestatdisplay")
     return result
