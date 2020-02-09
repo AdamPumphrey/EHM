@@ -99,14 +99,14 @@ def del_playertableview(conn):
 
 def select_attributetable(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT player.name as name, player.teamplaying as team, 
-    player.leagueplaying as league, player.year as year, playerattributes.determination, playerattributes.aggression, 
-    playerattributes.anticipation, playerattributes.bravery, playerattributes.flair, playerattributes.influence, 
-    playerattributes.teamwork, playerattributes.creativity, playerattributes.workrate, playerattributes.acceleration, 
-    playerattributes.agility, playerattributes.balance, playerattributes.hitting, playerattributes.speed, 
-    playerattributes.stamina, playerattributes.strength, playerattributes.checking, playerattributes.deflections, 
-    playerattributes.deking, playerattributes.faceoffs, playerattributes.offthepuck, playerattributes.passing, 
-    playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot, 
+    c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT player.year as year, player.name as name, 
+    player.teamplaying as team, player.leagueplaying as league, player.age as age, playerattributes.determination, 
+    playerattributes.aggression, playerattributes.anticipation, playerattributes.bravery, playerattributes.flair, 
+    playerattributes.influence, playerattributes.teamwork, playerattributes.creativity, playerattributes.workrate, 
+    playerattributes.acceleration, playerattributes.agility, playerattributes.balance, playerattributes.hitting, 
+    playerattributes.speed, playerattributes.stamina, playerattributes.strength, playerattributes.checking, 
+    playerattributes.deflections, playerattributes.deking, playerattributes.faceoffs, playerattributes.offthepuck, 
+    playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot, 
     playerattributes.stickhandling, playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, 
     playerattributes.reboundcontrol, playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER 
     JOIN player ON player.id WHERE playerattributes.id = player.id''')
@@ -121,8 +121,8 @@ def del_attview(conn):
     
 def select_techatts(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS techattdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, player.year, playerattributes.checking, playerattributes.deflections, 
+    c.execute('''CREATE VIEW IF NOT EXISTS techattdisplay AS SELECT player.year, player.name, player.teamplaying, 
+        player.leagueplaying, player.age, playerattributes.checking, playerattributes.deflections, 
         playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, playerattributes.offthepuck,
         playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot,
         playerattributes.stickhandling, playerattributes.wristshot FROM playerattributes INNER JOIN player ON player.id 
@@ -138,8 +138,8 @@ def del_techattdisplay(conn):
     
 def select_mentatts(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS mentattdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, player.year, playerattributes.aggression, playerattributes.anticipation, 
+    c.execute('''CREATE VIEW IF NOT EXISTS mentattdisplay AS SELECT player.year, player.name, player.teamplaying, 
+        player.leagueplaying, player.age, playerattributes.aggression, playerattributes.anticipation, 
         playerattributes.bravery, playerattributes.creativity, playerattributes.determination, playerattributes.flair,
         playerattributes.influence, playerattributes.teamwork, playerattributes.workrate FROM playerattributes 
         INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
@@ -154,8 +154,8 @@ def del_mentattdisplay(conn):
     
 def select_physatts(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS physattdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, player.year, playerattributes.acceleration, playerattributes.agility, 
+    c.execute('''CREATE VIEW IF NOT EXISTS physattdisplay AS SELECT player.year, player.name, player.teamplaying, 
+        player.leagueplaying, player.age, playerattributes.acceleration, playerattributes.agility, 
         playerattributes.balance, playerattributes.speed, playerattributes.stamina, playerattributes.strength FROM 
         playerattributes INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
     result = c.execute("SELECT * FROM physattdisplay")
@@ -169,8 +169,8 @@ def del_physattdisplay(conn):
 
 def select_basic_regskaterstats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS regbasicstatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, regplayerstats.year, regplayerstats.gamesplayed, regplayerstats.goals, 
+    c.execute('''CREATE VIEW IF NOT EXISTS regbasicstatdisplay AS SELECT regplayerstats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, regplayerstats.gamesplayed, regplayerstats.goals, 
     regplayerstats.assists, regplayerstats.points, regplayerstats.plusminus, regplayerstats.pims, regplayerstats.sog, 
     regplayerstats.shotpercent, regplayerstats.avr, regplayerstats.atoi, regplayerstats.hits FROM regplayerstats 
     INNER JOIN player ON player.id WHERE regplayerstats.id = player.id''')
@@ -187,12 +187,13 @@ def del_regbasicstatview(conn):
 
 def select_adv_regskaterstats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS regadvstatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, regplayerstats.year, regplayerstats.gamesplayed, regplayerstats.ppg, regplayerstats.ppa, 
-    regplayerstats.ppp, regplayerstats.shg, regplayerstats.sha, regplayerstats.shp, regplayerstats.gwg, 
-    regplayerstats.fg, regplayerstats.giveaways, regplayerstats.takeaways, regplayerstats.fopercent, 
-    regplayerstats.shotsblocked, regplayerstats.appt, regplayerstats.apkt, regplayerstats.plus, regplayerstats.minus, 
-    regplayerstats.firststars FROM regplayerstats INNER JOIN player ON player.id WHERE regplayerstats.id = player.id''')
+    c.execute('''CREATE VIEW IF NOT EXISTS regadvstatdisplay AS SELECT regplayerstats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, regplayerstats.gamesplayed, regplayerstats.ppg, 
+    regplayerstats.ppa, regplayerstats.ppp, regplayerstats.shg, regplayerstats.sha, regplayerstats.shp, 
+    regplayerstats.gwg, regplayerstats.fg, regplayerstats.giveaways, regplayerstats.takeaways, 
+    regplayerstats.fopercent, regplayerstats.shotsblocked, regplayerstats.appt, regplayerstats.apkt, 
+    regplayerstats.plus, regplayerstats.minus, regplayerstats.firststars FROM regplayerstats INNER JOIN player ON 
+    player.id WHERE regplayerstats.id = player.id''')
     result = c.execute("SELECT * FROM regadvstatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
     #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
@@ -207,8 +208,8 @@ def del_regadvstatview(conn):
     
 def select_adv_poffskaterstats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS poffadvstatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.ppg, 
+    c.execute('''CREATE VIEW IF NOT EXISTS poffadvstatdisplay AS SELECT poffplayerstats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, poffplayerstats.gamesplayed, poffplayerstats.ppg, 
     poffplayerstats.ppa, poffplayerstats.ppp, poffplayerstats.shg, poffplayerstats.sha, poffplayerstats.shp, 
     poffplayerstats.gwg, poffplayerstats.fg, poffplayerstats.giveaways, poffplayerstats.takeaways, 
     poffplayerstats.fopercent, poffplayerstats.shotsblocked, poffplayerstats.appt, poffplayerstats.apkt, 
@@ -228,8 +229,8 @@ def del_poffadvstatview(conn):
 
 def select_basic_poffskaterstats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS poffbasicstatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, poffplayerstats.year, poffplayerstats.gamesplayed, poffplayerstats.goals, 
+    c.execute('''CREATE VIEW IF NOT EXISTS poffbasicstatdisplay AS SELECT poffplayerstats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, poffplayerstats.gamesplayed, poffplayerstats.goals, 
     poffplayerstats.assists, poffplayerstats.points, poffplayerstats.plusminus, poffplayerstats.pims, 
     poffplayerstats.sog, poffplayerstats.shotpercent, poffplayerstats.avr, poffplayerstats.atoi, poffplayerstats.hits 
     FROM poffplayerstats INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id''')
@@ -246,8 +247,8 @@ def del_poffbasicstatview(conn):
 
 def select_reggoaliestats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS reggoaliestatdisplay AS SELECT player.name, player.teamplaying, 
-    player.leagueplaying, reggoaliestats.year, reggoaliestats.gamesplayed, reggoaliestats.wins, 
+    c.execute('''CREATE VIEW IF NOT EXISTS reggoaliestatdisplay AS SELECT reggoaliestats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, reggoaliestats.gamesplayed, reggoaliestats.wins, 
     reggoaliestats.losses, reggoaliestats.ties, reggoaliestats.shotsagainst, reggoaliestats.goalsagainst, 
     reggoaliestats.gaa, reggoaliestats.svp, reggoaliestats.shutouts, reggoaliestats.minutes FROM reggoaliestats INNER 
     JOIN player ON player.id WHERE reggoaliestats.id = player.id''')
@@ -264,11 +265,11 @@ def del_reggoalstatdisplay(conn):
 
 def select_poffgoaliestats(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS poffgoaliestatdisplay AS SELECT player.name, player.teamplaying, 
-        player.leagueplaying, poffgoaliestats.year, poffgoaliestats.gamesplayed, poffgoaliestats.wins, 
-        poffgoaliestats.losses, poffgoaliestats.ties, poffgoaliestats.shotsagainst, poffgoaliestats.goalsagainst, 
-        poffgoaliestats.gaa, poffgoaliestats.svp, poffgoaliestats.shutouts, poffgoaliestats.minutes FROM poffgoaliestats 
-        INNER JOIN player ON player.id WHERE poffgoaliestats.id = player.id''')
+    c.execute('''CREATE VIEW IF NOT EXISTS poffgoaliestatdisplay AS SELECT poffgoaliestats.year, player.name, 
+    player.teamplaying, player.leagueplaying, player.age, poffgoaliestats.gamesplayed, poffgoaliestats.wins, 
+    poffgoaliestats.losses, poffgoaliestats.ties, poffgoaliestats.shotsagainst, poffgoaliestats.goalsagainst, 
+    poffgoaliestats.gaa, poffgoaliestats.svp, poffgoaliestats.shutouts, poffgoaliestats.minutes FROM poffgoaliestats 
+    INNER JOIN player ON player.id WHERE poffgoaliestats.id = player.id''')
     result = c.execute("SELECT * FROM poffgoaliestatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
     #  'SO', 'MP']

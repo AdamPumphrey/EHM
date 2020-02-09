@@ -36,25 +36,25 @@ class Ui_MainWindow(object):
         self.current_player = None
         self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
                                'Position(s)']
-        self.att_headers = ['Name', 'Team', 'League', 'Year', 'Determination', 'Aggression', 'Anticipation',
+        self.att_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Determination', 'Aggression', 'Anticipation',
                             'Bravery', 'Flair', 'Influence', 'Teamwork', 'Creativity', 'Work Rate', 'Acceleration',
                             'Agility', 'Balance', 'Hitting', 'Speed', 'Stamina', 'Strength', 'Checking', 'Deflections',
                             'Deking', 'Faceoffs', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning', 'Slapshot',
                             'Stickhandling', 'Wristshot', 'Blocker', 'Glove', 'Rebound Control', 'Recovery', 'Reflexes']
-        self.techatt_headers = ['Name', 'Team', 'League', 'Year', 'Checking', 'Deflections', 'Deking',
+        self.techatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Checking', 'Deflections', 'Deking',
                                 'Faceoffs', 'Hitting', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning',
                                 'Slapshot', 'Stickhandling', 'Wristshot']
-        self.mentatt_headers = ['Name', 'Team', 'League', 'Year', 'Aggression', 'Anticipation', 'Bravery', 'Creativity',
-                                'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
-        self.physatt_headers = ['Name', 'Team', 'League', 'Year', 'Acceleration', 'Agility', 'Balance', 'Speed',
+        self.mentatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Aggression', 'Anticipation', 'Bravery',
+                                'Creativity', 'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
+        self.physatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Acceleration', 'Agility', 'Balance', 'Speed',
                                 'Stamina', 'Strength']
-        self.playerbasicstat_headers = ['Name', 'Team', 'League', 'Year', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM',
-                                        'SOG', 'Sh%', 'AvR', 'ATOI', 'HT']
-        self.playeradvstat_headers = ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
-                                      'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
-                                      'FS']
-        self.goaliestat_headers = ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
-                                   'SO', 'MP']
+        self.playerbasicstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Games Played', 'G', 'A', 'P', '+/-',
+                                        'PIM', 'SOG', 'Sh%', 'AvR', 'ATOI', 'HT']
+        self.playeradvstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Games Played', 'PPG', 'PPA', 'PPP',
+                                      'SHG', 'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+',
+                                      '-', 'FS']
+        self.goaliestat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA',
+                                   'SV%', 'SO', 'MP']
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
