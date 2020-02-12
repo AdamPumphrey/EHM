@@ -369,7 +369,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 36)):
+                    if column_number in (range(4, 36)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -385,7 +385,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 16)):
+                    if column_number in (range(4, 17)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -401,7 +401,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 13)):
+                    if column_number in (range(4, 14)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -417,7 +417,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 10)):
+                    if column_number in (range(4, 11)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -433,7 +433,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -449,7 +449,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 21, 22):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -465,7 +465,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 14)):
+                    if column_number in (range(4, 15)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -481,7 +481,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14):
+                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -497,7 +497,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 20, 21):
+                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 21, 22):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -513,7 +513,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(3, 14)):
+                    if column_number in (range(4, 15)) or column_number == 0:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
