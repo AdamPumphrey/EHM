@@ -11,7 +11,8 @@ import ehmtracker as ehm
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from create_db_window import Ui_dbname_input_dialog as Form
+from create_db_window import Ui_dbname_input_dialog as cdb_Form
+from choose_import import Ui_import_type_dialog as imp_Form
 
 
 def drop_views(conn):
@@ -246,6 +247,7 @@ class Ui_MainWindow(object):
         self.actionLoad_db.triggered.connect(lambda: self.load_db())
         self.actionExit_db.triggered.connect(lambda: self.exit_db())
         self.actionExit.triggered.connect(lambda: self.exit_app())
+        self.import_button.clicked.connect(lambda: self.import_file())
         self.players_button.clicked.connect(lambda: self.show_playertable(self.conn))
         self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
         self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn))
@@ -291,7 +293,7 @@ class Ui_MainWindow(object):
             i = msg.exec_()
         else:
             create_db_window = QtWidgets.QDialog()
-            create_db_window.ui = Form()
+            create_db_window.ui = cdb_Form()
             create_db_window.ui.setupUi(create_db_window)
             if create_db_window.exec_():
                 if create_db_window.ui.create_dbname:
@@ -345,6 +347,31 @@ class Ui_MainWindow(object):
                 self.show_playertable(self.conn)
                 self.conn_status = True
                 self.check_conn()
+
+    def import_file(self):
+        if not self.conn:
+            filename = QFileDialog.getOpenFileName(MainWindow, 'Open File')
+            if filename[0]:
+                self.db_name = filename[0]
+                self.conn = ehm.connection(filename[0])
+                # self.show_playertable(self.conn)
+                self.conn_status = True
+                # self.check_conn()
+                drop_views(self.conn)
+                self.conn.commit()
+        if self.conn:
+            choose_import_window = QtWidgets.QDialog()
+            choose_import_window.ui = imp_Form()
+            choose_import_window.ui.setupUi(choose_import_window)
+            if choose_import_window.exec_():
+                if choose_import_window.ui.result == 1:
+                    # import player
+                    pass
+                elif choose_import_window.ui.result == 2:
+                    # import stats
+                    pass
+            else:
+                self.exit_db()
 
     def show_playertable(self, conn):
         if conn:
