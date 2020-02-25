@@ -62,7 +62,7 @@ class Ui_import_type_dialog(QtWidgets.QDialog):
         import_type_dialog.setWindowTitle(_translate("import_type_dialog", "Choose Import Type"))
         self.import_type_stats_radio.setText(_translate("import_type_dialog", "Import Stats"))
         self.import_type_label.setText(_translate("import_type_dialog", "Type of data to import:"))
-        self.import_type_player_radio.setText(_translate("import_type_dialog", "Import Player"))
+        self.import_type_player_radio.setText(_translate("import_type_dialog", "Import Players"))
 
 
 # if __name__ == "__main__":
