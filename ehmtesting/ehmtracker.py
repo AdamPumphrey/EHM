@@ -56,11 +56,12 @@ def get_goaliestat_list(goaliefile):
 
 
 def connection(dbname):
+    # def connection():
     """
     Establishes connection with ehmtracking.db database via sqlite3.
     :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
     """
-    # dbname = 'test.db'
+    dbname = 'newtest.db'
     conn = None
     try:
         conn = sqlite3.connect(dbname)
@@ -525,7 +526,9 @@ def import_goaliestats(conn, goaliestats, playoffs=0):
 
 def main():
     attfile = 'canuckatts.csv'
+    attfile2 = 'canuckatts2.csv'
     year = '2020;'
+    year2 = '2021;'
     statfile = 'canuckstats.csv'
     teamid = 'Canucks'
     playeratts = 'playeratt_import.csv'
