@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from create_db_window import Ui_dbname_input_dialog as cdb_Form
 from choose_import import Ui_import_type_dialog as imp_Form
+from choose_year import Ui_choose_year_dialog as year_Form
 
 
 def drop_views(conn):
@@ -366,7 +367,20 @@ class Ui_MainWindow(object):
             if choose_import_window.exec_():
                 if choose_import_window.ui.result == 1:
                     # import player
-                    pass
+                    playerfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Player Import File')
+                    if playerfile[0]:
+                        choose_year_window = QtWidgets.QDialog()
+                        choose_year_window.ui = year_Form()
+                        choose_year_window.ui.setupUi(choose_year_window)
+                        if choose_year_window.exec_():
+                            year_val = str(choose_year_window.ui.choose_year_spinbox.value()) + ';'
+                            player_attlist = ehm.get_attimport_list(playerfile[0], 'playeratt_import.csv', year_val)
+                            ehm.import_player(self.conn, player_attlist)
+                            self.check_conn()
+                        else:
+                            self.exit_db()
+                    else:
+                        self.exit_db()
                 elif choose_import_window.ui.result == 2:
                     # import stats
                     pass
