@@ -267,6 +267,8 @@ class Ui_MainWindow(object):
         self.actionTechnical.triggered.connect(lambda: self.show_techattributetable(self.conn))
         self.actionMental.triggered.connect(lambda: self.show_mentattributetable(self.conn))
         self.actionPhysical.triggered.connect(lambda: self.show_physattributetable(self.conn))
+        self.actionImport_Players.triggered.connect(lambda: self.import_file(mode=1))
+        self.actionImport_Stats.triggered.connect(lambda: self.import_file(mode=2))
 
     def check_conn(self):
         if not self.conn_status:
@@ -353,7 +355,7 @@ class Ui_MainWindow(object):
                 self.conn_status = True
                 self.check_conn()
 
-    def import_file(self):
+    def import_file(self, mode=0):
         if not self.conn:
             filename = QFileDialog.getOpenFileName(MainWindow, 'Open Database')
             if filename[0]:
@@ -365,89 +367,91 @@ class Ui_MainWindow(object):
                 drop_views(self.conn)
                 self.conn.commit()
         if self.conn:
-            choose_import_window = QtWidgets.QDialog()
-            choose_import_window.ui = imp_Form()
-            choose_import_window.ui.setupUi(choose_import_window)
-            if choose_import_window.exec_():
-                if choose_import_window.ui.result == 1:
-                    # import player
-                    playerfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Player Import File')
-                    if playerfile[0]:
-                        choose_year_window = QtWidgets.QDialog()
-                        choose_year_window.ui = year_Form()
-                        choose_year_window.ui.setupUi(choose_year_window)
-                        if choose_year_window.exec_():
-                            year_val = str(choose_year_window.ui.choose_year_spinbox.value()) + ';'
-                            player_attlist = ehm.get_attimport_list(playerfile[0], 'playeratt_import.csv', year_val)
-                            ehm.import_player(self.conn, player_attlist)
-                            self.conn.commit()
-                            self.check_conn()
-                            self.show_playertable(self.conn)
-                    #     else:
-                    #         self.exit_db()
-                    # else:
-                    #     self.exit_db()
-                elif choose_import_window.ui.result == 2:
-                    # import stats
-                    statfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Stat Import File')
-                    if statfile[0]:
-                        team_id_list = stats.get_team_ids(statfile[0])
-                        choose_team_window = QtWidgets.QDialog()
-                        choose_team_window.ui = team_Form()
-                        choose_team_window.ui.setupUi(choose_team_window)
-                        choose_team_window.ui.choose_team_combobox.addItems(team_id_list)
-                        if choose_team_window.exec_():
-                            team_id = choose_team_window.ui.choose_team_combobox.currentText()
-                            ehm.get_statimport_files(statfile[0], team_id)
-                            reg_skaterstats = ehm.get_skaterstat_list('regseason_statimport.csv')
-                            reg_goaliestats = ehm.get_goaliestat_list('regseason_goalstatimport.csv')
-                            poff_skaterstats = ehm.get_skaterstat_list('playoff_statimport.csv')
-                            poff_goaliestats = ehm.get_goaliestat_list('playoff_goalstatimport.csv')
-                            fail_list = []
-                            if reg_skaterstats:
-                                retval = ehm.import_skaterstats(self.conn, reg_skaterstats)
-                                if retval is not None:
-                                    for i in retval:
-                                        fail_list.append(i)
-                            if poff_skaterstats:
-                                retval = ehm.import_skaterstats(self.conn, poff_skaterstats, 1)
-                                if retval is not None:
-                                    for i in retval:
-                                        fail_list.append(i)
-                            if reg_goaliestats:
-                                retval = ehm.import_goaliestats(self.conn, reg_goaliestats)
-                                if retval is not None:
-                                    for i in retval:
-                                        fail_list.append(i)
-                            if poff_goaliestats:
-                                retval = ehm.import_goaliestats(self.conn, poff_goaliestats, 1)
-                                if retval is not None:
-                                    for i in retval:
-                                        fail_list.append(i)
-                            if fail_list:
-                                newstr = ''
-                                for i in fail_list:
-                                    newstr += i + '\n'
-                                msg = QMessageBox()
-                                msg.setWindowTitle("Warning")
-                                msg.setText("The following items could not be imported (no corresponding player in "
-                                            "database):")
-                                msg.setInformativeText(newstr)
-                                msg.setIcon(QMessageBox.Warning)
-                                msg.setStandardButtons(QMessageBox.Ok)
-                                msg.setDefaultButton(QMessageBox.Ok)
-                                i = msg.exec_()
-                            self.conn.commit()
-                            self.rm_import_files()
-                            self.check_conn()
-                            self.show_regbasicstats(self.conn)
-                    #     else:
-                    #         self.exit_db()
-                    # else:
-                    #     self.exit_db()
-            # else:
-            #     self.exit_db()
-            #     pass
+            if mode == 0:
+                choose_import_window = QtWidgets.QDialog()
+                choose_import_window.ui = imp_Form()
+                choose_import_window.ui.setupUi(choose_import_window)
+                if choose_import_window.exec_():
+                    if choose_import_window.ui.result == 1:
+                        # import player
+                        self.import_player()
+                    elif choose_import_window.ui.result == 2:
+                        # import stats
+                        self.import_stats()
+            elif mode == 1:
+                self.import_player()
+            elif mode == 2:
+                self.import_stats()
+
+    def import_player(self):
+        # import player
+        playerfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Player Import File')
+        if playerfile[0]:
+            choose_year_window = QtWidgets.QDialog()
+            choose_year_window.ui = year_Form()
+            choose_year_window.ui.setupUi(choose_year_window)
+            if choose_year_window.exec_():
+                year_val = str(choose_year_window.ui.choose_year_spinbox.value()) + ';'
+                player_attlist = ehm.get_attimport_list(playerfile[0], 'playeratt_import.csv', year_val)
+                ehm.import_player(self.conn, player_attlist)
+                self.conn.commit()
+                self.check_conn()
+                self.show_playertable(self.conn)
+
+    def import_stats(self):
+        # import stats
+        statfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Stat Import File')
+        if statfile[0]:
+            team_id_list = stats.get_team_ids(statfile[0])
+            choose_team_window = QtWidgets.QDialog()
+            choose_team_window.ui = team_Form()
+            choose_team_window.ui.setupUi(choose_team_window)
+            choose_team_window.ui.choose_team_combobox.addItems(team_id_list)
+            if choose_team_window.exec_():
+                team_id = choose_team_window.ui.choose_team_combobox.currentText()
+                ehm.get_statimport_files(statfile[0], team_id)
+                reg_skaterstats = ehm.get_skaterstat_list('regseason_statimport.csv')
+                reg_goaliestats = ehm.get_goaliestat_list('regseason_goalstatimport.csv')
+                poff_skaterstats = ehm.get_skaterstat_list('playoff_statimport.csv')
+                poff_goaliestats = ehm.get_goaliestat_list('playoff_goalstatimport.csv')
+                fail_list = []
+                if reg_skaterstats:
+                    retval = ehm.import_skaterstats(self.conn, reg_skaterstats)
+                    if retval is not None:
+                        for i in retval:
+                            fail_list.append(i)
+                if poff_skaterstats:
+                    retval = ehm.import_skaterstats(self.conn, poff_skaterstats, 1)
+                    if retval is not None:
+                        for i in retval:
+                            fail_list.append(i)
+                if reg_goaliestats:
+                    retval = ehm.import_goaliestats(self.conn, reg_goaliestats)
+                    if retval is not None:
+                        for i in retval:
+                            fail_list.append(i)
+                if poff_goaliestats:
+                    retval = ehm.import_goaliestats(self.conn, poff_goaliestats, 1)
+                    if retval is not None:
+                        for i in retval:
+                            fail_list.append(i)
+                if fail_list:
+                    newstr = ''
+                    for i in fail_list:
+                        newstr += i + '\n'
+                    msg = QMessageBox()
+                    msg.setWindowTitle("Warning")
+                    msg.setText("The following items could not be imported (no corresponding player in "
+                                "database):")
+                    msg.setInformativeText(newstr)
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setDefaultButton(QMessageBox.Ok)
+                    i = msg.exec_()
+                self.conn.commit()
+                self.rm_import_files()
+                self.check_conn()
+                self.show_regbasicstats(self.conn)
 
     def rm_import_files(self):
         if Path('regseason_statimport.csv').is_file():
@@ -695,8 +699,10 @@ class Ui_MainWindow(object):
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionImport_Players.setText(_translate("MainWindow", "Import Players"))
         self.actionImport_Players.setStatusTip(_translate("MainWindow", "Import player data"))
+        self.actionImport_Players.setShortcut(_translate("MainWindow", "Ctrl+P"))
         self.actionImport_Stats.setText(_translate("MainWindow", "Import Stats"))
         self.actionImport_Stats.setStatusTip(_translate("MainWindow", "Import season stats"))
+        self.actionImport_Stats.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionPlayers.setText(_translate("MainWindow", "Players"))
         self.actionPlayers.setStatusTip(_translate("MainWindow", "View players"))
         self.actionAttributes.setText(_translate("MainWindow", "Attributes"))
