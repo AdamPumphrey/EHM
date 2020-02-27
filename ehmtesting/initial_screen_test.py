@@ -382,10 +382,11 @@ class Ui_MainWindow(object):
                             ehm.import_player(self.conn, player_attlist)
                             self.conn.commit()
                             self.check_conn()
-                        else:
-                            self.exit_db()
-                    else:
-                        self.exit_db()
+                            self.show_playertable(self.conn)
+                    #     else:
+                    #         self.exit_db()
+                    # else:
+                    #     self.exit_db()
                 elif choose_import_window.ui.result == 2:
                     # import stats
                     statfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Stat Import File')
@@ -402,23 +403,51 @@ class Ui_MainWindow(object):
                             reg_goaliestats = ehm.get_goaliestat_list('regseason_goalstatimport.csv')
                             poff_skaterstats = ehm.get_skaterstat_list('playoff_statimport.csv')
                             poff_goaliestats = ehm.get_goaliestat_list('playoff_goalstatimport.csv')
+                            fail_list = []
                             if reg_skaterstats:
-                                ehm.import_skaterstats(self.conn, reg_skaterstats)
+                                retval = ehm.import_skaterstats(self.conn, reg_skaterstats)
+                                if retval is not None:
+                                    for i in retval:
+                                        fail_list.append(i)
                             if poff_skaterstats:
-                                ehm.import_skaterstats(self.conn, poff_skaterstats, 1)
+                                retval = ehm.import_skaterstats(self.conn, poff_skaterstats, 1)
+                                if retval is not None:
+                                    for i in retval:
+                                        fail_list.append(i)
                             if reg_goaliestats:
-                                ehm.import_goaliestats(self.conn, reg_goaliestats)
+                                retval = ehm.import_goaliestats(self.conn, reg_goaliestats)
+                                if retval is not None:
+                                    for i in retval:
+                                        fail_list.append(i)
                             if poff_goaliestats:
-                                ehm.import_goaliestats(self.conn, poff_goaliestats, 1)
+                                retval = ehm.import_goaliestats(self.conn, poff_goaliestats, 1)
+                                if retval is not None:
+                                    for i in retval:
+                                        fail_list.append(i)
+                            if fail_list:
+                                newstr = ''
+                                for i in fail_list:
+                                    newstr += i + '\n'
+                                msg = QMessageBox()
+                                msg.setWindowTitle("Warning")
+                                msg.setText("The following items could not be imported (no corresponding player in "
+                                            "database):")
+                                msg.setInformativeText(newstr)
+                                msg.setIcon(QMessageBox.Warning)
+                                msg.setStandardButtons(QMessageBox.Ok)
+                                msg.setDefaultButton(QMessageBox.Ok)
+                                i = msg.exec_()
                             self.conn.commit()
                             self.rm_import_files()
                             self.check_conn()
-                        else:
-                            self.exit_db()
-                    else:
-                        self.exit_db()
-            else:
-                self.exit_db()
+                            self.show_regbasicstats(self.conn)
+                    #     else:
+                    #         self.exit_db()
+                    # else:
+                    #     self.exit_db()
+            # else:
+            #     self.exit_db()
+            #     pass
 
     def rm_import_files(self):
         if Path('regseason_statimport.csv').is_file():
