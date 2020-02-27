@@ -6,11 +6,12 @@ import stats_csv_parse as statparse
 import attribute_csv as attparse
 import sqlite3
 import database_config as db_config
+import pathlib
 
 
 def get_statimport_files(statfile, teamid):
     """
-    Takes a raw .csv file exported from EHM and creates up to four parsed stat files - regular season skates, regular
+    Takes a raw .csv file exported from EHM and creates up to four parsed stat files - regular season skaters, regular
     season goalies, playoff skaters, and playoff goalies.
     :param statfile: string, name of .csv file exported from EHM's NHL stat page
     :param teamid: string, the identifier of the team you want to grab data for - may vary between EHM databases -
@@ -40,8 +41,11 @@ def get_skaterstat_list(skaterfile):
     :param skaterfile: string, name of formatted .csv file created via get_statimport_files
     :return: list, used for importing skater reg season/playoff stats
     """
-    statparse.format_skaters(skaterfile)
-    return statparse.parse_skaters(skaterfile)
+    if pathlib.Path(skaterfile).is_file():
+        statparse.format_skaters(skaterfile)
+        return statparse.parse_skaters(skaterfile)
+    else:
+        return None
 
 
 def get_goaliestat_list(goaliefile):
@@ -51,8 +55,11 @@ def get_goaliestat_list(goaliefile):
     :param goaliefile: string, name of formatted .csv file created via get_statimport_files
     :return: list, used for importing goalie reg season/playoff stats
     """
-    statparse.format_goalies(goaliefile)
-    return statparse.parse_goalies(goaliefile)
+    if pathlib.Path(goaliefile).is_file():
+        statparse.format_goalies(goaliefile)
+        return statparse.parse_goalies(goaliefile)
+    else:
+        return None
 
 
 def connection(dbname):
@@ -61,7 +68,7 @@ def connection(dbname):
     Establishes connection with ehmtracking.db database via sqlite3.
     :return: sqlite3.Connection - the connection to the ehmtracking.db database in use
     """
-    dbname = 'newtest.db'
+    # dbname = 'newtest.db'
     conn = None
     try:
         conn = sqlite3.connect(dbname)
@@ -83,6 +90,7 @@ def create_db(conn):
     db_config.create_reggoalie_stats(conn)
     db_config.create_poffplayer_stats(conn)
     db_config.create_poffgoalie_stats(conn)
+    # conn.commit()
 
 
 def select_playertable(conn):
@@ -100,17 +108,18 @@ def del_playertableview(conn):
 
 def select_attributetable(conn):
     c = conn.cursor()
-    c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT player.year as year, player.name as name, 
-    player.teamplaying as team, player.leagueplaying as league, player.age as age, playerattributes.determination, 
-    playerattributes.aggression, playerattributes.anticipation, playerattributes.bravery, playerattributes.flair, 
-    playerattributes.influence, playerattributes.teamwork, playerattributes.creativity, playerattributes.workrate, 
-    playerattributes.acceleration, playerattributes.agility, playerattributes.balance, playerattributes.hitting, 
-    playerattributes.speed, playerattributes.stamina, playerattributes.strength, playerattributes.checking, 
-    playerattributes.deflections, playerattributes.deking, playerattributes.faceoffs, playerattributes.offthepuck, 
-    playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot, 
-    playerattributes.stickhandling, playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, 
-    playerattributes.reboundcontrol, playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER 
-    JOIN player ON player.id WHERE playerattributes.id = player.id''')
+    c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT playerattributes.year as year, player.name 
+    as name, player.teamplaying as team, player.leagueplaying as league, playerattributes.age as 
+    age, playerattributes.determination, playerattributes.aggression, playerattributes.anticipation, 
+    playerattributes.bravery, playerattributes.flair, playerattributes.influence, playerattributes.teamwork, 
+    playerattributes.creativity, playerattributes.workrate, playerattributes.acceleration, playerattributes.agility, 
+    playerattributes.balance, playerattributes.hitting, playerattributes.speed, playerattributes.stamina, 
+    playerattributes.strength, playerattributes.checking, playerattributes.deflections, playerattributes.deking, 
+    playerattributes.faceoffs, playerattributes.offthepuck, playerattributes.passing, playerattributes.pokecheck, 
+    playerattributes.positioning, playerattributes.slapshot, playerattributes.stickhandling, 
+    playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, playerattributes.reboundcontrol, 
+    playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER JOIN player ON player.id WHERE 
+    playerattributes.id = player.id''')
     result = c.execute("SELECT * FROM attdisplay")
     return result
 
@@ -118,12 +127,12 @@ def select_attributetable(conn):
 def del_attview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS attdisplay''')
-    
-    
+
+
 def select_techatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS techattdisplay AS SELECT player.year, player.name, player.teamplaying, 
-        player.leagueplaying, player.age, playerattributes.checking, playerattributes.deflections, 
+        player.leagueplaying, playerattributes.age, playerattributes.checking, playerattributes.deflections, 
         playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, playerattributes.offthepuck,
         playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot,
         playerattributes.stickhandling, playerattributes.wristshot FROM playerattributes INNER JOIN player ON player.id 
@@ -135,12 +144,12 @@ def select_techatts(conn):
 def del_techattdisplay(conn):
     c = conn.cursor()
     c.execute("DROP VIEW IF EXISTS techattdisplay")
-    
-    
+
+
 def select_mentatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS mentattdisplay AS SELECT player.year, player.name, player.teamplaying, 
-        player.leagueplaying, player.age, playerattributes.aggression, playerattributes.anticipation, 
+        player.leagueplaying, playerattributes.age, playerattributes.aggression, playerattributes.anticipation, 
         playerattributes.bravery, playerattributes.creativity, playerattributes.determination, playerattributes.flair,
         playerattributes.influence, playerattributes.teamwork, playerattributes.workrate FROM playerattributes 
         INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
@@ -151,12 +160,12 @@ def select_mentatts(conn):
 def del_mentattdisplay(conn):
     c = conn.cursor()
     c.execute("DROP VIEW IF EXISTS mentattdisplay")
-    
-    
+
+
 def select_physatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS physattdisplay AS SELECT player.year, player.name, player.teamplaying, 
-        player.leagueplaying, player.age, playerattributes.acceleration, playerattributes.agility, 
+        player.leagueplaying, playerattributes.age, playerattributes.acceleration, playerattributes.agility, 
         playerattributes.balance, playerattributes.speed, playerattributes.stamina, playerattributes.strength FROM 
         playerattributes INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
     result = c.execute("SELECT * FROM physattdisplay")
@@ -205,8 +214,8 @@ def select_adv_regskaterstats(conn):
 def del_regadvstatview(conn):
     c = conn.cursor()
     c.execute('''DROP VIEW IF EXISTS regadvstatdisplay''')
-    
-    
+
+
 def select_adv_poffskaterstats(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS poffadvstatdisplay AS SELECT poffplayerstats.year, player.name, 
@@ -275,8 +284,8 @@ def select_poffgoaliestats(conn):
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
     #  'SO', 'MP']
     return result
-    
-    
+
+
 def del_poffgoaliestatdisplay(conn):
     c = conn.cursor()
     result = c.execute("DROP VIEW IF EXISTS poffgoaliestatdisplay")
@@ -330,22 +339,23 @@ def import_player(conn, playeratts):
                                                                                 row['Id']))
         # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
-            c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'],
-                                                                 row['Determination'], row['Aggression'],
-                                                                 row['Anticipation'], row['Bravery'], row['Flair'],
-                                                                 row['Influence'], row['Teamwork'],
-                                                                 row['Creativity'], row['Work Rate'],
-                                                                 row['Acceleration'], row['Agility'], row['Balance'],
-                                                                 row['Hitting'], row['Speed'], row['Stamina'],
-                                                                 row['Strength'], row['Checking'],
-                                                                 row['Deflections'], row['Deking'], row['Faceoffs'],
-                                                                 row['Off The Puck'], row['Passing'],
-                                                                 row['Pokecheck'], row['Positioning'],
-                                                                 row['Slapshot'], row['Stickhandling'],
-                                                                 row['Wristshot'], row['Blocker'], row['Glove'],
-                                                                 row['Rebound Control'], row['Recovery'],
-                                                                 row['Reflexes']))
+            c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (row['Id'], row['Year'], row['Team'], row['Age'],
+                                                                       row['Determination'], row['Aggression'],
+                                                                       row['Anticipation'], row['Bravery'],
+                                                                       row['Flair'], row['Influence'], row['Teamwork'],
+                                                                       row['Creativity'], row['Work Rate'],
+                                                                       row['Acceleration'], row['Agility'],
+                                                                       row['Balance'], row['Hitting'], row['Speed'],
+                                                                       row['Stamina'], row['Strength'], row['Checking'],
+                                                                       row['Deflections'], row['Deking'],
+                                                                       row['Faceoffs'], row['Off The Puck'],
+                                                                       row['Passing'], row['Pokecheck'],
+                                                                       row['Positioning'], row['Slapshot'],
+                                                                       row['Stickhandling'], row['Wristshot'],
+                                                                       row['Blocker'], row['Glove'],
+                                                                       row['Rebound Control'], row['Recovery'],
+                                                                       row['Reflexes']))
 
     conn.commit()
 
@@ -373,6 +383,7 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
         if len(result) == 1:
             row['Id'] = result[0][0]
         else:
+            print(row)
             print('error')
             return
         # reg season checking
