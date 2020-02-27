@@ -97,6 +97,9 @@ def parse_skaters(skaters_name):
         if not is_float(row['Sh%']):
             row['Sh%'] = '0.0'
 
+        if len(row['ATOI']) != 5:
+            row['ATOI'] = '0' + row['ATOI']
+
         # print(pos)
         row['Pos'] = pos
         playerstat_data.append(row)
