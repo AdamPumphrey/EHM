@@ -8,12 +8,16 @@
 
 
 import ehmtracker as ehm
+import stats_csv as stats
 import sys
+import os
+from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from create_db_window import Ui_dbname_input_dialog as cdb_Form
 from choose_import import Ui_import_type_dialog as imp_Form
 from choose_year import Ui_choose_year_dialog as year_Form
+from choose_team import Ui_choose_team_dialog as team_Form
 
 
 def drop_views(conn):
@@ -301,7 +305,7 @@ class Ui_MainWindow(object):
                     text = create_db_window.ui.create_dbname
                     if text[-1] != 'b' or text[-2] != 'd' or text[-3] != '.':
                         text += '.db'
-                        print(text)
+                        # print(text)
                         self.conn = ehm.connection(text)
                         if not self.conn:
                             msg = QMessageBox()
@@ -351,7 +355,7 @@ class Ui_MainWindow(object):
 
     def import_file(self):
         if not self.conn:
-            filename = QFileDialog.getOpenFileName(MainWindow, 'Open File')
+            filename = QFileDialog.getOpenFileName(MainWindow, 'Open Database')
             if filename[0]:
                 self.db_name = filename[0]
                 self.conn = ehm.connection(filename[0])
@@ -376,6 +380,7 @@ class Ui_MainWindow(object):
                             year_val = str(choose_year_window.ui.choose_year_spinbox.value()) + ';'
                             player_attlist = ehm.get_attimport_list(playerfile[0], 'playeratt_import.csv', year_val)
                             ehm.import_player(self.conn, player_attlist)
+                            self.conn.commit()
                             self.check_conn()
                         else:
                             self.exit_db()
@@ -383,9 +388,47 @@ class Ui_MainWindow(object):
                         self.exit_db()
                 elif choose_import_window.ui.result == 2:
                     # import stats
-                    pass
+                    statfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Stat Import File')
+                    if statfile[0]:
+                        team_id_list = stats.get_team_ids(statfile[0])
+                        choose_team_window = QtWidgets.QDialog()
+                        choose_team_window.ui = team_Form()
+                        choose_team_window.ui.setupUi(choose_team_window)
+                        choose_team_window.ui.choose_team_combobox.addItems(team_id_list)
+                        if choose_team_window.exec_():
+                            team_id = choose_team_window.ui.choose_team_combobox.currentText()
+                            ehm.get_statimport_files(statfile[0], team_id)
+                            reg_skaterstats = ehm.get_skaterstat_list('regseason_statimport.csv')
+                            reg_goaliestats = ehm.get_goaliestat_list('regseason_goalstatimport.csv')
+                            poff_skaterstats = ehm.get_skaterstat_list('playoff_statimport.csv')
+                            poff_goaliestats = ehm.get_goaliestat_list('playoff_goalstatimport.csv')
+                            if reg_skaterstats:
+                                ehm.import_skaterstats(self.conn, reg_skaterstats)
+                            if poff_skaterstats:
+                                ehm.import_skaterstats(self.conn, poff_skaterstats, 1)
+                            if reg_goaliestats:
+                                ehm.import_goaliestats(self.conn, reg_goaliestats)
+                            if poff_goaliestats:
+                                ehm.import_goaliestats(self.conn, poff_goaliestats, 1)
+                            self.conn.commit()
+                            self.rm_import_files()
+                            self.check_conn()
+                        else:
+                            self.exit_db()
+                    else:
+                        self.exit_db()
             else:
                 self.exit_db()
+
+    def rm_import_files(self):
+        if Path('regseason_statimport.csv').is_file():
+            os.remove('regseason_statimport.csv')
+        if Path('regseason_goalstatimport.csv').is_file():
+            os.remove('regseason_goalstatimport.csv')
+        if Path('playoff_statimport.csv').is_file():
+            os.remove('playoff_statimport.csv')
+        if Path('playoff_goalstatimport.csv').is_file():
+            os.remove('playoff_goalstatimport.csv')
 
     def show_playertable(self, conn):
         if conn:
