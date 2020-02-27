@@ -83,6 +83,26 @@ def parse_statfile(filename, teamname):
         create_datafile('playoff_goalstatimport.csv', playoff_goaldata)
 
 
+def get_team_ids(filename):
+    stats = open(filename, 'r', encoding='cp1252')
+    data = stats.readlines()
+    stats.close()
+
+    del data[0:5]
+
+    teamids = []
+    for i in data:
+        temp = i.split(',')
+        if len(temp) == 1:
+            break
+        else:
+            if temp[1] not in teamids:
+                teamids.append(temp[1])
+    teamids.sort()
+
+    return teamids
+
+
 def parsedata(identifier, dataset, new_dataset):
     """
     This function moves rows of data from a stat .csv file to a new dataset.
