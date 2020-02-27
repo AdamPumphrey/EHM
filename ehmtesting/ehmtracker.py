@@ -119,7 +119,7 @@ def select_attributetable(conn):
     playerattributes.positioning, playerattributes.slapshot, playerattributes.stickhandling, 
     playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, playerattributes.reboundcontrol, 
     playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER JOIN player ON player.id WHERE 
-    playerattributes.id = player.id''')
+    playerattributes.id = player.id AND playerattributes.year = player.year''')
     result = c.execute("SELECT * FROM attdisplay")
     return result
 
@@ -136,7 +136,7 @@ def select_techatts(conn):
         playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, playerattributes.offthepuck,
         playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, playerattributes.slapshot,
         playerattributes.stickhandling, playerattributes.wristshot FROM playerattributes INNER JOIN player ON player.id 
-        WHERE playerattributes.id = player.id''')
+        WHERE playerattributes.id = player.id AND playerattributes.year = player.year''')
     result = c.execute("SELECT * FROM techattdisplay")
     return result
 
@@ -152,7 +152,7 @@ def select_mentatts(conn):
         player.leagueplaying, playerattributes.age, playerattributes.aggression, playerattributes.anticipation, 
         playerattributes.bravery, playerattributes.creativity, playerattributes.determination, playerattributes.flair,
         playerattributes.influence, playerattributes.teamwork, playerattributes.workrate FROM playerattributes 
-        INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
+        INNER JOIN player ON player.id WHERE playerattributes.id = player.id AND playerattributes.year = player.year''')
     result = c.execute("SELECT * FROM mentattdisplay")
     return result
 
@@ -167,7 +167,8 @@ def select_physatts(conn):
     c.execute('''CREATE VIEW IF NOT EXISTS physattdisplay AS SELECT player.year, player.name, player.teamplaying, 
         player.leagueplaying, playerattributes.age, playerattributes.acceleration, playerattributes.agility, 
         playerattributes.balance, playerattributes.speed, playerattributes.stamina, playerattributes.strength FROM 
-        playerattributes INNER JOIN player ON player.id WHERE playerattributes.id = player.id''')
+        playerattributes INNER JOIN player ON player.id WHERE playerattributes.id = player.id AND playerattributes.year 
+        = player.year''')
     result = c.execute("SELECT * FROM physattdisplay")
     return result
 
@@ -183,7 +184,7 @@ def select_basic_regskaterstats(conn):
     player.teamplaying, player.leagueplaying, player.age, regplayerstats.gamesplayed, regplayerstats.goals, 
     regplayerstats.assists, regplayerstats.points, regplayerstats.plusminus, regplayerstats.pims, regplayerstats.sog, 
     regplayerstats.shotpercent, regplayerstats.avr, regplayerstats.atoi, regplayerstats.hits FROM regplayerstats 
-    INNER JOIN player ON player.id WHERE regplayerstats.id = player.id''')
+    INNER JOIN player ON player.id WHERE regplayerstats.id = player.id AND regplayerstats.year = player.year''')
     result = c.execute("SELECT * FROM regbasicstatdisplay")
     # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
     # 'Sh%', 'AvR', 'ATOI', 'HT']
@@ -203,7 +204,7 @@ def select_adv_regskaterstats(conn):
     regplayerstats.gwg, regplayerstats.fg, regplayerstats.giveaways, regplayerstats.takeaways, 
     regplayerstats.fopercent, regplayerstats.shotsblocked, regplayerstats.appt, regplayerstats.apkt, 
     regplayerstats.plus, regplayerstats.minus, regplayerstats.firststars FROM regplayerstats INNER JOIN player ON 
-    player.id WHERE regplayerstats.id = player.id''')
+    player.id WHERE regplayerstats.id = player.id AND regplayerstats.year = player.year''')
     result = c.execute("SELECT * FROM regadvstatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
     #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
@@ -224,7 +225,7 @@ def select_adv_poffskaterstats(conn):
     poffplayerstats.gwg, poffplayerstats.fg, poffplayerstats.giveaways, poffplayerstats.takeaways, 
     poffplayerstats.fopercent, poffplayerstats.shotsblocked, poffplayerstats.appt, poffplayerstats.apkt, 
     poffplayerstats.plus, poffplayerstats.minus, poffplayerstats.firststars FROM poffplayerstats INNER JOIN player ON 
-    player.id WHERE poffplayerstats.id = player.id''')
+    player.id WHERE poffplayerstats.id = player.id AND poffplayerstats.year = player.year''')
     result = c.execute("SELECT * FROM poffadvstatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'Games Played', 'PPG', 'PPA', 'PPP', 'SHG',
     #  'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+', '-',
@@ -243,7 +244,8 @@ def select_basic_poffskaterstats(conn):
     player.teamplaying, player.leagueplaying, player.age, poffplayerstats.gamesplayed, poffplayerstats.goals, 
     poffplayerstats.assists, poffplayerstats.points, poffplayerstats.plusminus, poffplayerstats.pims, 
     poffplayerstats.sog, poffplayerstats.shotpercent, poffplayerstats.avr, poffplayerstats.atoi, poffplayerstats.hits 
-    FROM poffplayerstats INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id''')
+    FROM poffplayerstats INNER JOIN player ON player.id WHERE poffplayerstats.id = player.id AND poffplayerstats.year = 
+    player.year''')
     result = c.execute("SELECT * FROM poffbasicstatdisplay")
     # ['Name', 'Year', 'Team', 'Games Played', 'G', 'A', 'P', '+/-', 'PIM', 'SOG',
     # 'Sh%', 'AvR', 'ATOI', 'HT']
@@ -261,7 +263,7 @@ def select_reggoaliestats(conn):
     player.teamplaying, player.leagueplaying, player.age, reggoaliestats.gamesplayed, reggoaliestats.wins, 
     reggoaliestats.losses, reggoaliestats.ties, reggoaliestats.shotsagainst, reggoaliestats.goalsagainst, 
     reggoaliestats.gaa, reggoaliestats.svp, reggoaliestats.shutouts, reggoaliestats.minutes FROM reggoaliestats INNER 
-    JOIN player ON player.id WHERE reggoaliestats.id = player.id''')
+    JOIN player ON player.id WHERE reggoaliestats.id = player.id AND reggoaliestats.year = player.year''')
     result = c.execute("SELECT * FROM reggoaliestatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
     #  'SO', 'MP']
@@ -279,7 +281,7 @@ def select_poffgoaliestats(conn):
     player.teamplaying, player.leagueplaying, player.age, poffgoaliestats.gamesplayed, poffgoaliestats.wins, 
     poffgoaliestats.losses, poffgoaliestats.ties, poffgoaliestats.shotsagainst, poffgoaliestats.goalsagainst, 
     poffgoaliestats.gaa, poffgoaliestats.svp, poffgoaliestats.shutouts, poffgoaliestats.minutes FROM poffgoaliestats 
-    INNER JOIN player ON player.id WHERE poffgoaliestats.id = player.id''')
+    INNER JOIN player ON player.id WHERE poffgoaliestats.id = player.id AND poffgoaliestats.year = player.year''')
     result = c.execute("SELECT * FROM poffgoaliestatdisplay")
     # ['Name', 'Team', 'League', 'Year', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA', 'SV%',
     #  'SO', 'MP']
@@ -332,11 +334,14 @@ def import_player(conn, playeratts):
                                                                                 row['Position(s)']))
         # player exists in database - update values for player
         else:
-            c.execute('''UPDATE player SET year = ?, age = ?, teamrights = ?, 
-            teamplaying = ?, leagueplaying = ?, positions = ? WHERE id = ?''', (row['Year'], row['Age'],
-                                                                                row['Team Rights'], row['Team'],
-                                                                                row['League'], row['Position(s)'],
-                                                                                row['Id']))
+            c.execute('''DELETE FROM player WHERE id = ? AND year = ? AND teamplaying = ?''', (row['Id'],
+                                                                                               row['Year'],
+                                                                                               row['Team']))
+            c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
+                                                                                row['Year'], row['Age'],
+                                                                                row['Team Rights'],
+                                                                                row['Team'], row['League'],
+                                                                                row['Position(s)']))
         # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
             c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
@@ -381,8 +386,9 @@ def import_skaterstats(conn, skaterstats, playoffs=0):
         # grab ID of current player from 'player' table
         c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
         result = c.fetchall()
+        print(result)
         # ID grabbed should match ID given, error if not
-        if len(result) == 1:
+        if len(set(result)) == 1:
             row['Id'] = result[0][0]
         else:
             fail_list.append(row['Name'])
@@ -493,7 +499,7 @@ def import_goaliestats(conn, goaliestats, playoffs=0):
         c.execute("SELECT id FROM player WHERE name = ? AND positions = ?", (row['Name'], row['Pos']))
         result = c.fetchall()
         # ID grabbed should match ID given, error if not
-        if len(result) == 1:
+        if len(set(result)) == 1:
             row['Id'] = result[0][0]
         else:
             fail_list.append(row['Name'])
