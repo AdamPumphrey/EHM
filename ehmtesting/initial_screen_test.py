@@ -18,6 +18,7 @@ from create_db_window import Ui_dbname_input_dialog as cdb_Form
 from choose_import import Ui_import_type_dialog as imp_Form
 from choose_year import Ui_choose_year_dialog as year_Form
 from choose_team import Ui_choose_team_dialog as team_Form
+from filter import Ui_filter_dialog as filter_Form
 
 
 def drop_views(conn):
@@ -473,6 +474,15 @@ class Ui_MainWindow(object):
             os.remove('playoff_statimport.csv')
         if Path('playoff_goalstatimport.csv').is_file():
             os.remove('playoff_goalstatimport.csv')
+
+    def setup_filter(self, conn):
+        filter_window = QtWidgets.QDialog()
+        filter_window.ui = filter_Form()
+        filter_window.ui.setupUi(filter_window)
+        # TODO: fill in combo boxes before exec
+        # TODO: grab values from filter form
+        # TODO: create dynamic queries and views
+        # TODO: properly display filtered results
 
     def show_playertable(self, conn):
         if conn:
