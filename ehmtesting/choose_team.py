@@ -25,6 +25,7 @@ class Ui_choose_team_dialog(QtWidgets.QDialog):
         choose_team_dialog.setSizePolicy(sizePolicy)
         choose_team_dialog.setMinimumSize(QtCore.QSize(388, 91))
         choose_team_dialog.setMaximumSize(QtCore.QSize(388, 91))
+        choose_team_dialog.setWindowIcon(QtGui.QIcon('ehmtracking.ico'))
         self.verticalLayout = QtWidgets.QVBoxLayout(choose_team_dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.choose_team_label = QtWidgets.QLabel(choose_team_dialog)

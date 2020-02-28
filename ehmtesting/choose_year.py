@@ -19,6 +19,7 @@ class Ui_choose_year_dialog(QtWidgets.QDialog):
         choose_year_dialog.resize(263, 102)
         choose_year_dialog.setMinimumSize(QtCore.QSize(263, 102))
         choose_year_dialog.setMaximumSize(QtCore.QSize(263, 102))
+        choose_year_dialog.setWindowIcon(QtGui.QIcon('ehmtracking.ico'))
         self.verticalLayout = QtWidgets.QVBoxLayout(choose_year_dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.choose_year_label = QtWidgets.QLabel(choose_year_dialog)

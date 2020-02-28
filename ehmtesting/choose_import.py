@@ -20,6 +20,7 @@ class Ui_import_type_dialog(QtWidgets.QDialog):
         import_type_dialog.resize(240, 119)
         import_type_dialog.setMinimumSize(QtCore.QSize(240, 119))
         import_type_dialog.setMaximumSize(QtCore.QSize(240, 119))
+        import_type_dialog.setWindowIcon(QtGui.QIcon('ehmtracking.ico'))
         self.gridLayout = QtWidgets.QGridLayout(import_type_dialog)
         self.gridLayout.setObjectName("gridLayout")
         self.import_type_stats_radio = QtWidgets.QRadioButton(import_type_dialog)
