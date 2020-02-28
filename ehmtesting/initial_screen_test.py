@@ -42,21 +42,21 @@ class Ui_MainWindow(object):
         self.current_player = None
         self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
                                'Position(s)']
-        self.att_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Determination', 'Aggression', 'Anticipation',
+        self.att_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Determination', 'Aggression', 'Anticipation',
                             'Bravery', 'Flair', 'Influence', 'Teamwork', 'Creativity', 'Work Rate', 'Acceleration',
                             'Agility', 'Balance', 'Hitting', 'Speed', 'Stamina', 'Strength', 'Checking', 'Deflections',
                             'Deking', 'Faceoffs', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning', 'Slapshot',
                             'Stickhandling', 'Wristshot', 'Blocker', 'Glove', 'Rebound Control', 'Recovery', 'Reflexes']
-        self.techatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Checking', 'Deflections', 'Deking',
+        self.techatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Checking', 'Deflections', 'Deking',
                                 'Faceoffs', 'Hitting', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning',
                                 'Slapshot', 'Stickhandling', 'Wristshot']
-        self.mentatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Aggression', 'Anticipation', 'Bravery',
+        self.mentatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Aggression', 'Anticipation', 'Bravery',
                                 'Creativity', 'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
-        self.physatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Acceleration', 'Agility', 'Balance', 'Speed',
+        self.physatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Acceleration', 'Agility', 'Balance', 'Speed',
                                 'Stamina', 'Strength']
-        self.playerbasicstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Games Played', 'G', 'A', 'P', '+/-',
+        self.playerbasicstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'G', 'A', 'P', '+/-',
                                         'PIM', 'SOG', 'Sh%', 'AvR', 'ATOI', 'HT']
-        self.playeradvstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Games Played', 'PPG', 'PPA', 'PPP',
+        self.playeradvstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'PPG', 'PPA', 'PPP',
                                       'SHG', 'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+',
                                       '-', 'FS']
         self.goaliestat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA',
@@ -151,6 +151,8 @@ class Ui_MainWindow(object):
         self.menuAttributes.setObjectName("menuAttributes")
         # self.menuSkater_Stats = QtWidgets.QMenu(self.menuView)
         # self.menuSkater_Stats.setObjectName("menuSkater_Stats")
+        self.menuFilter = QtWidgets.QMenu(self.menubar)
+        self.menuFilter.setObjectName("menuFilter")
         self.menuGraph = QtWidgets.QMenu(self.menubar)
         self.menuGraph.setObjectName("menuGraph")
         MainWindow.setMenuBar(self.menubar)
@@ -205,6 +207,10 @@ class Ui_MainWindow(object):
         self.actionMental.setObjectName("actionMental")
         self.actionPhysical = QtWidgets.QAction(MainWindow)
         self.actionPhysical.setObjectName("actionPhysical")
+        self.actionSetFilter = QtWidgets.QAction(MainWindow)
+        self.actionSetFilter.setObjectName("actionSetFilter")
+        self.actionClearFilter = QtWidgets.QAction(MainWindow)
+        self.actionClearFilter.setObjectName("actionClearFilter")
         self.menuFile.addAction(self.actionCreate_db)
         self.menuFile.addAction(self.actionLoad_db)
         self.menuFile.addAction(self.actionExit_db)
@@ -233,9 +239,12 @@ class Ui_MainWindow(object):
         self.menuGraph.addAction(self.actionGraph_Data)
         self.menuGraph.addAction(self.actionEdit_Graph)
         self.menuGraph.addAction(self.actionSave_Graph)
+        self.menuFilter.addAction(self.actionSetFilter)
+        self.menuFilter.addAction(self.actionClearFilter)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuImport.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
+        self.menubar.addAction(self.menuFilter.menuAction())
         self.menubar.addAction(self.menuGraph.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -278,6 +287,7 @@ class Ui_MainWindow(object):
             self.actionExit_db.setDisabled(True)
             self.actionLoad_db.setDisabled(False)
             self.menuView.setDisabled(True)
+            self.menuFilter.setDisabled(True)
             self.menuGraph.setDisabled(True)
         else:
             self.database_display.show()
@@ -286,6 +296,7 @@ class Ui_MainWindow(object):
             self.actionExit_db.setDisabled(False)
             self.actionLoad_db.setDisabled(True)
             self.menuView.setDisabled(False)
+            self.menuFilter.setDisabled(False)
             self.menuGraph.setDisabled(False)
 
     def create_db(self):
@@ -486,7 +497,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(4, 36)) or column_number == 0:
+                    if column_number in (range(6, 38)) or column_number == 0 or column_number == 4:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -502,7 +513,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(4, 17)) or column_number == 0:
+                    if column_number in (range(6, 18)) or column_number == 0 or column_number == 4:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -518,7 +529,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(4, 14)) or column_number == 0:
+                    if column_number in (range(6, 15)) or column_number == 0 or column_number == 4:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -534,7 +545,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (range(4, 11)) or column_number == 0:
+                    if column_number in (range(6, 12)) or column_number == 0 or column_number == 4:
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -550,7 +561,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15):
+                    if column_number in (0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -566,7 +577,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 21, 22):
+                    if column_number in (0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 21, 22, 23):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -598,7 +609,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15):
+                    if column_number in (0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -614,7 +625,7 @@ class Ui_MainWindow(object):
             for row_number, row_data in enumerate(result):
                 self.database_display.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    if column_number in (0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 21, 22):
+                    if column_number in (0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 21, 22, 23):
                         self.database_display.setItem(row_number, column_number, QCustomTableWidgetItem(data))
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
@@ -684,6 +695,7 @@ class Ui_MainWindow(object):
         self.menuPlayoffs.setTitle(_translate("MainWindow", "Playoff Stats"))
         self.menuAttributes.setTitle(_translate("MainWindow", "Attributes"))
         # self.menuSkater_Stats.setTitle(_translate("MainWindow", "Skater Stats"))
+        self.menuFilter.setTitle(_translate("MainWindow", "Filter"))
         self.menuGraph.setTitle(_translate("MainWindow", "Graph"))
         self.actionCreate_db.setText(_translate("MainWindow", "Create Database"))
         self.actionCreate_db.setStatusTip(_translate("MainWindow", "Create a new database"))
@@ -711,6 +723,8 @@ class Ui_MainWindow(object):
         self.actionSkater_Stats.setStatusTip(_translate("MainWindow", "View skater stats"))
         # self.actionGoalie_Stats.setText(_translate("MainWindow", "Goalie Stats"))
         # self.actionGoalie_Stats.setStatusTip(_translate("MainWindow", "View goalie stats"))
+        self.actionSetFilter.setText(_translate("MainWindow", "Set Filter"))
+        self.actionClearFilter.setText(_translate("MainWindow", "Clear Filter"))
         self.actionGraph_Data.setText(_translate("MainWindow", "Create Graph"))
         self.actionEdit_Graph.setText(_translate("MainWindow", "Edit Graph"))
         self.actionSave_Graph.setText(_translate("MainWindow", "Save Graph"))
@@ -738,6 +752,7 @@ class Ui_MainWindow(object):
 
 
 class QCustomTableWidgetItem(QtWidgets.QTableWidgetItem):
+    # https://gis.stackexchange.com/questions/208881/qtableview-qtablewidget-alternative-for-floats
     def __init__(self, value):
         super(QCustomTableWidgetItem, self).__init__(str('%s' % value))
 
