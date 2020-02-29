@@ -643,17 +643,16 @@ class Ui_MainWindow(object):
                     # cond_count -= 1
                     # statement = eval_cond_count(cond_count, statement)
                 statement += ';'
-            dbcfg.create_filter_result(conn)
-            c = conn.cursor()
-            c.execute(statement)
-            insert_list = c.fetchall()
-            for row in insert_list:
-                c.execute('''INSERT INTO filterresult VALUES (?, ?, ?)''', (row[0], row[1], row[2]))
-            conn.commit()
-            self.filter_status = 1
-            self.show_playertable(conn, 1)
-            # TODO: properly display filtered results - stats
-            # TODO: create 'edit filter' function - snapshot of current filter in filter window
+                dbcfg.create_filter_result(conn)
+                c = conn.cursor()
+                c.execute(statement)
+                insert_list = c.fetchall()
+                for row in insert_list:
+                    c.execute('''INSERT INTO filterresult VALUES (?, ?, ?)''', (row[0], row[1], row[2]))
+                conn.commit()
+                self.filter_status = 1
+                self.show_playertable(conn, 1)
+                # TODO: create 'edit filter' function - snapshot of current filter in filter window
 
     def clear_filter(self, conn):
         ehm.del_filter_playertableview(conn)
