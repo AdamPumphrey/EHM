@@ -9,6 +9,7 @@
 
 import ehmtracker as ehm
 import stats_csv as stats
+import database_config as dbcfg
 import sys
 import os
 from pathlib import Path
@@ -33,6 +34,23 @@ def drop_views(conn):
     ehm.del_techattdisplay(conn)
     ehm.del_reggoalstatdisplay(conn)
     ehm.del_poffgoaliestatdisplay(conn)
+
+
+def eval_cond_count(count, statement):
+    if count > 0 and statement != "SELECT id FROM player WHERE ":
+        statement += " AND "
+    return statement
+
+
+def rm_import_files():
+    if Path('regseason_statimport.csv').is_file():
+        os.remove('regseason_statimport.csv')
+    if Path('regseason_goalstatimport.csv').is_file():
+        os.remove('regseason_goalstatimport.csv')
+    if Path('playoff_statimport.csv').is_file():
+        os.remove('playoff_statimport.csv')
+    if Path('playoff_goalstatimport.csv').is_file():
+        os.remove('playoff_goalstatimport.csv')
 
 
 class Ui_MainWindow(object):
@@ -62,6 +80,7 @@ class Ui_MainWindow(object):
                                       '-', 'FS']
         self.goaliestat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA',
                                    'SV%', 'SO', 'MP']
+        self.filter_status = 0
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -263,9 +282,9 @@ class Ui_MainWindow(object):
         self.actionExit_db.triggered.connect(lambda: self.exit_db())
         self.actionExit.triggered.connect(lambda: self.exit_app())
         self.import_button.clicked.connect(lambda: self.import_file())
-        self.players_button.clicked.connect(lambda: self.show_playertable(self.conn))
+        self.players_button.clicked.connect(lambda: self.show_playertable(self.conn, self.filter_status))
         self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
-        self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn))
+        self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn, self.filter_status))
         self.actionReg_Skater_Basic.triggered.connect(lambda: self.show_regbasicstats(self.conn))
         self.actionPoff_Skater_Basic.triggered.connect(lambda: self.show_poffbasicstats(self.conn))
         self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn))
@@ -273,12 +292,14 @@ class Ui_MainWindow(object):
         self.goaliestats_button.clicked.connect(lambda: self.show_reggoalstats(self.conn))
         self.actionReg_Goalie.triggered.connect(lambda: self.show_reggoalstats(self.conn))
         self.actionPoff_Goalie.triggered.connect(lambda: self.show_poffgoalstats(self.conn))
-        self.attributes_button.clicked.connect(lambda: self.show_attributetable(self.conn))
-        self.actionTechnical.triggered.connect(lambda: self.show_techattributetable(self.conn))
-        self.actionMental.triggered.connect(lambda: self.show_mentattributetable(self.conn))
-        self.actionPhysical.triggered.connect(lambda: self.show_physattributetable(self.conn))
+        self.attributes_button.clicked.connect(lambda: self.show_attributetable(self.conn, self.filter_status))
+        self.actionTechnical.triggered.connect(lambda: self.show_techattributetable(self.conn, self.filter_status))
+        self.actionMental.triggered.connect(lambda: self.show_mentattributetable(self.conn, self.filter_status))
+        self.actionPhysical.triggered.connect(lambda: self.show_physattributetable(self.conn, self.filter_status))
         self.actionImport_Players.triggered.connect(lambda: self.import_file(mode=1))
         self.actionImport_Stats.triggered.connect(lambda: self.import_file(mode=2))
+        self.actionSetFilter.triggered.connect(lambda: self.setup_filter(self.conn))
+        self.actionClearFilter.triggered.connect(lambda: self.clear_filter(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
@@ -396,6 +417,7 @@ class Ui_MainWindow(object):
                 self.import_stats()
 
     def import_player(self):
+        # TODO: midseason importing
         # import player
         playerfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Player Import File')
         if playerfile[0]:
@@ -461,32 +483,194 @@ class Ui_MainWindow(object):
                     msg.setDefaultButton(QMessageBox.Ok)
                     i = msg.exec_()
                 self.conn.commit()
-                self.rm_import_files()
+                rm_import_files()
                 self.check_conn()
                 self.show_regbasicstats(self.conn)
-
-    def rm_import_files(self):
-        if Path('regseason_statimport.csv').is_file():
-            os.remove('regseason_statimport.csv')
-        if Path('regseason_goalstatimport.csv').is_file():
-            os.remove('regseason_goalstatimport.csv')
-        if Path('playoff_statimport.csv').is_file():
-            os.remove('playoff_statimport.csv')
-        if Path('playoff_goalstatimport.csv').is_file():
-            os.remove('playoff_goalstatimport.csv')
 
     def setup_filter(self, conn):
         filter_window = QtWidgets.QDialog()
         filter_window.ui = filter_Form()
         filter_window.ui.setupUi(filter_window)
-        # TODO: fill in combo boxes before exec
-        # TODO: grab values from filter form
-        # TODO: create dynamic queries and views
-        # TODO: properly display filtered results
+        # fill in combo boxes before exec
+        # nation combo box
+        nation_result = ehm.list_nations(conn)
+        nation_list = []
+        for i in nation_result:
+            nation_list.append(i[0])
+        nation_list = [None] + nation_list
+        filter_window.ui.filter_nation_combobox.addItems(nation_list)
+        # team rights combo box
+        rights_result = ehm.list_teamrights(conn)
+        rights_list = []
+        for i in rights_result:
+            rights_list.append(i[0])
+        rights_list = [None] + rights_list
+        filter_window.ui.filter_teamrights_combobox.addItems(rights_list)
+        # team playing combo box
+        playing_result = ehm.list_teamplaying(conn)
+        playing_list = []
+        for i in playing_result:
+            playing_list.append(i[0])
+        playing_list = [None] + playing_list
+        filter_window.ui.filter_team_combobox.addItems(playing_list)
+        # league combo box
+        league_result = ehm.list_leagueplaying(conn)
+        league_list = []
+        for i in league_result:
+            league_list.append(i[0])
+        league_list = [None] + league_list
+        filter_window.ui.filter_league_combobox.addItems(league_list)
+        if filter_window.exec_():
+            # init default vals
+            res_dict = {'nameval': None, 'nationval': None, 'yearmin': None, 'yearmax': None, 'agemin': None,
+                        'agemax': None, 'rightsval': None, 'teamval': None, 'leagueval': None, 'lw': None, 'c': None,
+                        'rw': None, 'ld': None, 'rd': None, 'g': None}
+            if filter_window.ui.nameval:
+                res_dict['nameval'] = filter_window.ui.nameval
+            if filter_window.ui.lw:
+                res_dict['lw'] = filter_window.ui.lw
+            if filter_window.ui.c:
+                res_dict['c'] = filter_window.ui.c
+            if filter_window.ui.rw:
+                res_dict['rw'] = filter_window.ui.rw
+            if filter_window.ui.ld:
+                res_dict['ld'] = filter_window.ui.ld
+            if filter_window.ui.rd:
+                res_dict['rd'] = filter_window.ui.rd
+            if filter_window.ui.g:
+                res_dict['g'] = filter_window.ui.g
+            res_dict['nationval'] = filter_window.ui.filter_nation_combobox.currentText()
+            if res_dict['nationval'] == '':
+                res_dict['nationval'] = None
+            res_dict['rightsval'] = filter_window.ui.filter_teamrights_combobox.currentText()
+            if res_dict['rightsval'] == '':
+                res_dict['rightsval'] = None
+            res_dict['teamval'] = filter_window.ui.filter_team_combobox.currentText()
+            if res_dict['teamval'] == '':
+                res_dict['teamval'] = None
+            res_dict['leagueval'] = filter_window.ui.filter_league_combobox.currentText()
+            if res_dict['leagueval'] == '':
+                res_dict['leagueval'] = None
+            res_dict['yearmin'] = str(filter_window.ui.filter_minyear_spinbox.value())
+            res_dict['yearmax'] = str(filter_window.ui.filter_maxyear_spinbox.value())
+            res_dict['agemin'] = str(filter_window.ui.filter_minage_spinbox.value())
+            res_dict['agemax'] = str(filter_window.ui.filter_maxage_spinbox.value())
+            condition_list = []
+            for res in res_dict:
+                if res_dict[res] and res_dict[res] != '0':
+                    condition_list.append(res)
+            if not condition_list:
+                # nothing selected, apply no filters
+                print('yes')
+                self.show_playertable(conn)
+            else:
+                cond_count = len(condition_list)
+                statement = "SELECT id, year, teamplaying FROM player WHERE "
+                if 'nameval' in condition_list:
+                    namecond = '%' + res_dict['nameval'] + '%'
+                    name_statement = "name LIKE '" + namecond + "'"
+                    statement += name_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'nationval' in condition_list:
+                    nation_statement = "nationality IS '" + res_dict['nationval'] + "'"
+                    statement += nation_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'yearmin' in condition_list:
+                    yearmin_statement = "year >= " + res_dict['yearmin']
+                    statement += yearmin_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'yearmax' in condition_list:
+                    yearmax_statement = "year <= " + res_dict['yearmax']
+                    statement += yearmax_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'agemin' in condition_list:
+                    agemin_statement = "age >= " + res_dict['agemin']
+                    statement += agemin_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'agemax' in condition_list:
+                    agemax_statement = "age <= " + res_dict['agemax']
+                    statement += agemax_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'rightsval' in condition_list:
+                    rights_statement = "teamrights IS '" + res_dict['rightsval'] + "'"
+                    statement += rights_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'teamval' in condition_list:
+                    team_statement = "teamplaying IS '" + res_dict['teamval'] + "'"
+                    statement += team_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'leagueval' in condition_list:
+                    league_statement = "leagueplaying IS '" + res_dict['leagueval'] + "'"
+                    statement += league_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'lw' in condition_list:
+                    lw_statement = "positions LIKE '%lw%'"
+                    statement += lw_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'c' in condition_list:
+                    c_statement = "positions LIKE '%c%'"
+                    statement += c_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'rw' in condition_list:
+                    rw_statement = "positions LIKE '%rw%'"
+                    statement += rw_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'ld' in condition_list:
+                    ld_statement = "positions LIKE '%ld%'"
+                    statement += ld_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'rd' in condition_list:
+                    rd_statement = "positions LIKE '%rd%'"
+                    statement += rd_statement
+                    cond_count -= 1
+                    statement = eval_cond_count(cond_count, statement)
+                if 'g' in condition_list:
+                    g_statement = "positions LIKE '%g%'"
+                    statement += g_statement
+                    # cond_count -= 1
+                    # statement = eval_cond_count(cond_count, statement)
+                statement += ';'
+            dbcfg.create_filter_result(conn)
+            c = conn.cursor()
+            c.execute(statement)
+            insert_list = c.fetchall()
+            for row in insert_list:
+                c.execute('''INSERT INTO filterresult VALUES (?, ?, ?)''', (row[0], row[1], row[2]))
+            conn.commit()
+            self.filter_status = 1
+            self.show_playertable(conn, 1)
+            # TODO: properly display filtered results - stats
+            # TODO: create 'edit filter' function - snapshot of current filter in filter window
 
-    def show_playertable(self, conn):
+    def clear_filter(self, conn):
+        ehm.del_filter_playertableview(conn)
+        ehm.del_filter_attview(conn)
+        ehm.del_filter_techattdisplay(conn)
+        ehm.del_filter_mentattdisplay(conn)
+        ehm.del_filter_physattdisplay(conn)
+        dbcfg.drop_filter_result(conn)
+        self.filter_status = 0
+        self.show_playertable(conn)
+
+    def show_playertable(self, conn, filt=0):
         if conn:
-            result = ehm.select_playertable(conn)
+            if filt:
+                result = ehm.select_filter_playertable(conn)
+            else:
+                result = ehm.select_playertable(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.player_headers))
             self.database_display.setHorizontalHeaderLabels(self.player_headers)
@@ -497,9 +681,12 @@ class Ui_MainWindow(object):
                     self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_attributetable(self, conn):
+    def show_attributetable(self, conn, filt=0):
         if conn:
-            result = ehm.select_attributetable(conn)
+            if filt:
+                result = ehm.select_filter_attributetable(conn)
+            else:
+                result = ehm.select_attributetable(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.att_headers))
             self.database_display.setHorizontalHeaderLabels(self.att_headers)
@@ -513,9 +700,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_techattributetable(self, conn):
+    def show_techattributetable(self, conn, filt=0):
         if conn:
-            result = ehm.select_techatts(conn)
+            if filt:
+                result = ehm.select_filter_techatts(conn)
+            else:
+                result = ehm.select_techatts(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.techatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.techatt_headers)
@@ -529,9 +719,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_mentattributetable(self, conn):
+    def show_mentattributetable(self, conn, filt=0):
         if conn:
-            result = ehm.select_mentatts(conn)
+            if filt:
+                result = ehm.select_filter_mentatts(conn)
+            else:
+                result = ehm.select_mentatts(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.mentatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.mentatt_headers)
@@ -545,9 +738,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_physattributetable(self, conn):
+    def show_physattributetable(self, conn, filt=0):
         if conn:
-            result = ehm.select_physatts(conn)
+            if filt:
+                result = ehm.select_filter_physatts(conn)
+            else:
+                result = ehm.select_physatts(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.physatt_headers))
             self.database_display.setHorizontalHeaderLabels(self.physatt_headers)
@@ -661,6 +857,7 @@ class Ui_MainWindow(object):
         # if self.conn_status:
         if self.conn:
             drop_views(self.conn)
+            self.clear_filter(self.conn)
             self.conn.commit()
             self.conn.close()
             self.conn = None
