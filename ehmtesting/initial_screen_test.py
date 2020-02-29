@@ -283,15 +283,15 @@ class Ui_MainWindow(object):
         self.actionExit.triggered.connect(lambda: self.exit_app())
         self.import_button.clicked.connect(lambda: self.import_file())
         self.players_button.clicked.connect(lambda: self.show_playertable(self.conn, self.filter_status))
-        self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn))
+        self.skaterstats_button.clicked.connect(lambda: self.show_regbasicstats(self.conn, self.filter_status))
         self.actionPlayers.triggered.connect(lambda: self.show_playertable(self.conn, self.filter_status))
-        self.actionReg_Skater_Basic.triggered.connect(lambda: self.show_regbasicstats(self.conn))
-        self.actionPoff_Skater_Basic.triggered.connect(lambda: self.show_poffbasicstats(self.conn))
-        self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn))
-        self.actionPoff_Skater_Advanced.triggered.connect(lambda: self.show_poffadvstats(self.conn))
-        self.goaliestats_button.clicked.connect(lambda: self.show_reggoalstats(self.conn))
-        self.actionReg_Goalie.triggered.connect(lambda: self.show_reggoalstats(self.conn))
-        self.actionPoff_Goalie.triggered.connect(lambda: self.show_poffgoalstats(self.conn))
+        self.actionReg_Skater_Basic.triggered.connect(lambda: self.show_regbasicstats(self.conn, self.filter_status))
+        self.actionPoff_Skater_Basic.triggered.connect(lambda: self.show_poffbasicstats(self.conn, self.filter_status))
+        self.actionReg_Skater_Advanced.triggered.connect(lambda: self.show_regadvstats(self.conn, self.filter_status))
+        self.actionPoff_Skater_Advanced.triggered.connect(lambda: self.show_poffadvstats(self.conn, self.filter_status))
+        self.goaliestats_button.clicked.connect(lambda: self.show_reggoalstats(self.conn, self.filter_status))
+        self.actionReg_Goalie.triggered.connect(lambda: self.show_reggoalstats(self.conn, self.filter_status))
+        self.actionPoff_Goalie.triggered.connect(lambda: self.show_poffgoalstats(self.conn, self.filter_status))
         self.attributes_button.clicked.connect(lambda: self.show_attributetable(self.conn, self.filter_status))
         self.actionTechnical.triggered.connect(lambda: self.show_techattributetable(self.conn, self.filter_status))
         self.actionMental.triggered.connect(lambda: self.show_mentattributetable(self.conn, self.filter_status))
@@ -661,6 +661,12 @@ class Ui_MainWindow(object):
         ehm.del_filter_techattdisplay(conn)
         ehm.del_filter_mentattdisplay(conn)
         ehm.del_filter_physattdisplay(conn)
+        ehm.del_filter_regbasicstatview(conn)
+        ehm.del_filter_regadvstatview(conn)
+        ehm.del_filter_poffadvstatview(conn)
+        ehm.del_filter_poffbasicstatview(conn)
+        ehm.del_filter_reggoalstatdisplay(conn)
+        ehm.del_filter_poffgoaliestatdisplay(conn)
         dbcfg.drop_filter_result(conn)
         self.filter_status = 0
         self.show_playertable(conn)
@@ -757,9 +763,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_regbasicstats(self, conn):
+    def show_regbasicstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_basic_regskaterstats(conn)
+            if filt:
+                result = ehm.select_basic_filter_regskaterstats(conn)
+            else:
+                result = ehm.select_basic_regskaterstats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playerbasicstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
@@ -773,9 +782,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_regadvstats(self, conn):
+    def show_regadvstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_adv_regskaterstats(conn)
+            if filt:
+                result = ehm.select_filter_adv_regskaterstats(conn)
+            else:
+                result = ehm.select_adv_regskaterstats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playeradvstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
@@ -789,9 +801,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_reggoalstats(self, conn):
+    def show_reggoalstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_reggoaliestats(conn)
+            if filt:
+                result = ehm.select_filter_reggoaliestats(conn)
+            else:
+                result = ehm.select_reggoaliestats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.goaliestat_headers))
             self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
@@ -805,9 +820,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_poffbasicstats(self, conn):
+    def show_poffbasicstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_basic_poffskaterstats(conn)
+            if filt:
+                result = ehm.select_filter_basic_poffskaterstats(conn)
+            else:
+                result = ehm.select_basic_poffskaterstats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playerbasicstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playerbasicstat_headers)
@@ -821,9 +839,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_poffadvstats(self, conn):
+    def show_poffadvstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_adv_poffskaterstats(conn)
+            if filt:
+                result = ehm.select_filter_adv_poffskaterstats(conn)
+            else:
+                result = ehm.select_adv_poffskaterstats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.playeradvstat_headers))
             self.database_display.setHorizontalHeaderLabels(self.playeradvstat_headers)
@@ -837,9 +858,12 @@ class Ui_MainWindow(object):
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
 
-    def show_poffgoalstats(self, conn):
+    def show_poffgoalstats(self, conn, filt=0):
         if conn:
-            result = ehm.select_poffgoaliestats(conn)
+            if filt:
+                result = ehm.select_filter_poffgoaliestats(conn)
+            else:
+                result = ehm.select_poffgoaliestats(conn)
             self.database_display.setRowCount(0)
             self.database_display.setColumnCount(len(self.goaliestat_headers))
             self.database_display.setHorizontalHeaderLabels(self.goaliestat_headers)
@@ -876,6 +900,7 @@ class Ui_MainWindow(object):
     def exit_app(self):
         if self.conn:
             drop_views(self.conn)
+            self.clear_filter(self.conn)
             self.conn.commit()
             self.conn.close()
             self.conn = None
