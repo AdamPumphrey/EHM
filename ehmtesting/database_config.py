@@ -106,6 +106,27 @@ def create_player_attributes(conn):
         print(e)
 
 
+def create_filter_result(conn):
+    statement = """CREATE TABLE IF NOT EXISTS filterresult (id integer NOT null, year integer NOT NULL, teamplaying 
+    text NOT NULL, PRIMARY KEY (id, year, teamplaying)); """
+    try:
+        c = conn.cursor()
+        c.execute(statement)
+        conn.commit()
+    except sqlite3.Error as e:
+        print(e)
+
+
+def drop_filter_result(conn):
+    statement = """DROP TABLE IF EXISTS filterresult;"""
+    try:
+        c = conn.cursor()
+        c.execute(statement)
+        conn.commit()
+    except sqlite3.Error as e:
+        print(e)
+
+
 def main():
     conn = connection()
     create_player(conn)
