@@ -106,6 +106,21 @@ def del_playertableview(conn):
     c.execute('''DROP VIEW IF EXISTS playerdisplay''')
 
 
+def select_filter_playertable(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS filter_playerdisplay AS SELECT player.name, player.nationality, 
+    player.year, player.age, player.teamrights, player.teamplaying, player.leagueplaying, player.positions FROM 
+    player INNER JOIN filterresult ON filterresult.id WHERE player.id = filterresult.id AND player.year = 
+    filterresult.year AND player.teamplaying = filterresult.teamplaying''')
+    result = c.execute("SELECT * FROM filter_playerdisplay")
+    return result
+
+
+def del_filter_playertableview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS filter_playerdisplay''')
+
+
 def select_attributetable(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS attdisplay AS SELECT playerattributes.year as year, player.name 
@@ -129,6 +144,30 @@ def del_attview(conn):
     c.execute('''DROP VIEW IF EXISTS attdisplay''')
 
 
+def select_filter_attributetable(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS filter_attdisplay AS SELECT playerattributes.year as year, player.name as 
+    name, player.teamplaying as team, player.leagueplaying as league, playerattributes.age as age, player.positions, 
+    playerattributes.determination, playerattributes.aggression, playerattributes.anticipation, 
+    playerattributes.bravery, playerattributes.flair, playerattributes.influence, playerattributes.teamwork, 
+    playerattributes.creativity, playerattributes.workrate, playerattributes.acceleration, playerattributes.agility, 
+    playerattributes.balance, playerattributes.hitting, playerattributes.speed, playerattributes.stamina, 
+    playerattributes.strength, playerattributes.checking, playerattributes.deflections, playerattributes.deking, 
+    playerattributes.faceoffs, playerattributes.offthepuck, playerattributes.passing, playerattributes.pokecheck, 
+    playerattributes.positioning, playerattributes.slapshot, playerattributes.stickhandling, 
+    playerattributes.wristshot, playerattributes.blocker, playerattributes.glove, playerattributes.reboundcontrol, 
+    playerattributes.recovery, playerattributes.reflexes FROM playerattributes INNER JOIN player ON player.id = 
+    playerattributes.id INNER JOIN filterresult ON filterresult.id = player.id WHERE playerattributes.year = 
+    filterresult.year''')
+    result = c.execute("SELECT * FROM filter_attdisplay")
+    return result
+
+
+def del_filter_attview(conn):
+    c = conn.cursor()
+    c.execute('''DROP VIEW IF EXISTS filter_attdisplay''')
+
+
 def select_techatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS techattdisplay AS SELECT player.year, player.name, player.teamplaying, 
@@ -142,6 +181,24 @@ def select_techatts(conn):
 
 
 def del_techattdisplay(conn):
+    c = conn.cursor()
+    c.execute("DROP VIEW IF EXISTS techattdisplay")
+
+
+def select_filter_techatts(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS filter_techattdisplay AS SELECT player.year, player.name, 
+    player.teamplaying, player.leagueplaying, playerattributes.age, player.positions, playerattributes.checking, 
+    playerattributes.deflections, playerattributes.deking, playerattributes.faceoffs, playerattributes.hitting, 
+    playerattributes.offthepuck, playerattributes.passing, playerattributes.pokecheck, playerattributes.positioning, 
+    playerattributes.slapshot, playerattributes.stickhandling, playerattributes.wristshot FROM playerattributes INNER 
+    JOIN player ON player.id = playerattributes.id INNER JOIN filterresult ON filterresult.id = player.id WHERE 
+    playerattributes.year = filterresult.year''')
+    result = c.execute("SELECT * FROM filter_techattdisplay")
+    return result
+
+
+def del_filter_techattdisplay(conn):
     c = conn.cursor()
     c.execute("DROP VIEW IF EXISTS techattdisplay")
 
@@ -162,6 +219,23 @@ def del_mentattdisplay(conn):
     c.execute("DROP VIEW IF EXISTS mentattdisplay")
 
 
+def select_filter_mentatts(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS filter_mentattdisplay AS SELECT player.year, player.name, 
+    player.teamplaying, player.leagueplaying, playerattributes.age, player.positions, playerattributes.aggression, 
+    playerattributes.anticipation, playerattributes.bravery, playerattributes.creativity, 
+    playerattributes.determination, playerattributes.flair, playerattributes.influence, playerattributes.teamwork, 
+    playerattributes.workrate FROM playerattributes INNER JOIN player ON player.id = playerattributes.id INNER JOIN 
+    filterresult ON filterresult.id = player.id WHERE playerattributes.year = filterresult.year''')
+    result = c.execute("SELECT * FROM filter_mentattdisplay")
+    return result
+
+
+def del_filter_mentattdisplay(conn):
+    c = conn.cursor()
+    c.execute("DROP VIEW IF EXISTS filter_mentattdisplay")
+
+
 def select_physatts(conn):
     c = conn.cursor()
     c.execute('''CREATE VIEW IF NOT EXISTS physattdisplay AS SELECT player.year, player.name, player.teamplaying, 
@@ -176,6 +250,22 @@ def select_physatts(conn):
 def del_physattdisplay(conn):
     c = conn.cursor()
     c.execute("DROP VIEW IF EXISTS physattdisplay")
+
+
+def select_filter_physatts(conn):
+    c = conn.cursor()
+    c.execute('''CREATE VIEW IF NOT EXISTS filter_physattdisplay AS SELECT player.year, player.name, player.teamplaying, 
+    player.leagueplaying, playerattributes.age, player.positions, playerattributes.acceleration, 
+    playerattributes.agility, playerattributes.balance, playerattributes.speed, playerattributes.stamina, 
+    playerattributes.strength FROM playerattributes INNER JOIN player ON player.id = playerattributes.id INNER JOIN 
+    filterresult ON filterresult.id = player.id WHERE playerattributes.year = filterresult.year''')
+    result = c.execute("SELECT * FROM filter_physattdisplay")
+    return result
+
+
+def del_filter_physattdisplay(conn):
+    c = conn.cursor()
+    c.execute("DROP VIEW IF EXISTS filter_physattdisplay")
 
 
 def select_basic_regskaterstats(conn):
@@ -294,7 +384,31 @@ def del_poffgoaliestatdisplay(conn):
     return result
 
 
-def import_player(conn, playeratts):
+def list_nations(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT DISTINCT nationality FROM player")
+    return result
+
+
+def list_teamrights(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT DISTINCT teamrights FROM player")
+    return result
+
+
+def list_teamplaying(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT DISTINCT teamplaying FROM player")
+    return result
+
+
+def list_leagueplaying(conn):
+    c = conn.cursor()
+    result = c.execute("SELECT DISTINCT leagueplaying FROM player")
+    return result
+
+
+def import_player(conn, playeratts, midseason=0):
     """
     Imports player data and player attribute data into database.
     We want one line for each player in 'player' table (hence update condition), however we are fine with multiple
@@ -334,14 +448,15 @@ def import_player(conn, playeratts):
                                                                                 row['Position(s)']))
         # player exists in database - update values for player
         else:
-            c.execute('''DELETE FROM player WHERE id = ? AND year = ? AND teamplaying = ?''', (row['Id'],
-                                                                                               row['Year'],
-                                                                                               row['Team']))
-            c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'], row['Nation'],
-                                                                                row['Year'], row['Age'],
-                                                                                row['Team Rights'],
-                                                                                row['Team'], row['League'],
-                                                                                row['Position(s)']))
+            if not midseason:
+                c.execute('''DELETE FROM player WHERE id = ? AND year = ? AND teamplaying = ?''', (row['Id'],
+                                                                                                   row['Year'],
+                                                                                                   row['Team']))
+                c.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (row['Id'], row['Name'],
+                                                                                    row['Nation'], row['Year'],
+                                                                                    row['Age'], row['Team Rights'],
+                                                                                    row['Team'], row['League'],
+                                                                                    row['Position(s)']))
         # if player attribute data does not exist in database
         if (row['Id'], row['Year'], row['Team']) not in existing_atts:
             c.execute('''INSERT INTO playerattributes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
