@@ -20,6 +20,8 @@ from choose_import import Ui_import_type_dialog as imp_Form
 from choose_year import Ui_choose_year_dialog as year_Form
 from choose_team import Ui_choose_team_dialog as team_Form
 from filter import Ui_filter_dialog as filter_Form
+from select_table import  Ui_table_select_dialog as table_select_Form
+from select_rows import Ui_row_select_dialog as row_select_Form
 
 
 def drop_views(conn):
@@ -61,26 +63,36 @@ class Ui_MainWindow(object):
         self.current_player = None
         self.player_headers = ['Name', 'Nation', 'Season', 'Age', 'Team Rights', 'Team Playing', 'League',
                                'Position(s)']
-        self.att_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Determination', 'Aggression', 'Anticipation',
-                            'Bravery', 'Flair', 'Influence', 'Teamwork', 'Creativity', 'Work Rate', 'Acceleration',
-                            'Agility', 'Balance', 'Hitting', 'Speed', 'Stamina', 'Strength', 'Checking', 'Deflections',
-                            'Deking', 'Faceoffs', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning', 'Slapshot',
-                            'Stickhandling', 'Wristshot', 'Blocker', 'Glove', 'Rebound Control', 'Recovery', 'Reflexes']
-        self.techatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Checking', 'Deflections', 'Deking',
-                                'Faceoffs', 'Hitting', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning',
+        self.att_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Determination', 'Aggression',
+                            'Anticipation', 'Bravery', 'Flair', 'Influence', 'Teamwork', 'Creativity', 'Work Rate',
+                            'Acceleration', 'Agility', 'Balance', 'Hitting', 'Speed', 'Stamina', 'Strength', 'Checking',
+                            'Deflections', 'Deking', 'Faceoffs', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning',
+                            'Slapshot', 'Stickhandling', 'Wristshot', 'Blocker', 'Glove', 'Rebound Control', 'Recovery',
+                            'Reflexes']
+        self.techatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Checking', 'Deflections',
+                                'Deking', 'Faceoffs', 'Hitting', 'Off The Puck', 'Passing', 'Pokecheck', 'Positioning',
                                 'Slapshot', 'Stickhandling', 'Wristshot']
-        self.mentatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Aggression', 'Anticipation', 'Bravery',
-                                'Creativity', 'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
-        self.physatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Acceleration', 'Agility', 'Balance', 'Speed',
-                                'Stamina', 'Strength']
-        self.playerbasicstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'G', 'A', 'P', '+/-',
-                                        'PIM', 'SOG', 'Sh%', 'AvR', 'ATOI', 'HT']
-        self.playeradvstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'PPG', 'PPA', 'PPP',
-                                      'SHG', 'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT', 'APKT', '+',
-                                      '-', 'FS']
+        self.mentatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Aggression', 'Anticipation',
+                                'Bravery', 'Creativity', 'Determination', 'Flair', 'Influence', 'Teamwork', 'Work Rate']
+        self.physatt_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Acceleration', 'Agility',
+                                'Balance', 'Speed', 'Stamina', 'Strength']
+        self.playerbasicstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'G',
+                                        'A', 'P', '+/-', 'PIM', 'SOG', 'Sh%', 'AvR', 'ATOI', 'HT']
+        self.playeradvstat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'Position(s)', 'Games Played', 'PPG',
+                                      'PPA', 'PPP', 'SHG', 'SHA', 'SHP', 'GWG', 'FG', 'GV', 'TK', 'FO%', 'SHB', 'APPT',
+                                      'APKT', '+', '-', 'FS']
         self.goaliestat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA',
                                    'SV%', 'SO', 'MP']
         self.filter_status = 0
+        self.view_info = {'Attributes': 38, 'Technical Attributes': 18, 'Mental Attributes': 15,
+                          'Physical Attributes': 12, 'Skater Reg Season Basic Stats': 17,
+                          'Skater Reg Season Advanced Stats': 24, 'Goalie Reg Season Stats': 15,
+                          'Skater Playoff Basic Stats': 17, 'Skater Playoff Advanced Stats': 24,
+                          'Goalie Playoff Stats': 15}
+        self.viewlist = ['Attributes', 'Technical Attributes', 'Mental Attributes', 'Physical Attributes',
+                         'Skater Reg Season Basic Stats', 'Skater Reg Season Advanced Stats', 'Goalie Reg Season Stats',
+                         'Skater Playoff Basic Stats', 'Skater Playoff Advanced Stats', 'Goalie Playoff Stats']
+        self.rowdata = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -270,12 +282,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        # self.playermenu = QtWidgets.QMenu()
-        # self.actionTest = QtWidgets.QAction(self.database_display)
-        # self.actionTest.setObjectName("actionTest")
-        # self.playermenu.addAction(self.actionTest)
-
-        # db_name = 'ehmtracking.db'
         self.check_conn()
         self.actionCreate_db.triggered.connect(lambda: self.create_db())
         self.actionLoad_db.triggered.connect(lambda: self.load_db())
@@ -300,6 +306,7 @@ class Ui_MainWindow(object):
         self.actionImport_Stats.triggered.connect(lambda: self.import_file(mode=2))
         self.actionSetFilter.triggered.connect(lambda: self.setup_filter(self.conn))
         self.actionClearFilter.triggered.connect(lambda: self.clear_filter(self.conn))
+        self.actionGraph_Data.triggered.connect(lambda: self.create_graph(self.conn))
 
     def check_conn(self):
         if not self.conn_status:
@@ -394,9 +401,7 @@ class Ui_MainWindow(object):
             if filename[0]:
                 self.db_name = filename[0]
                 self.conn = ehm.connection(filename[0])
-                # self.show_playertable(self.conn)
                 self.conn_status = True
-                # self.check_conn()
                 drop_views(self.conn)
                 self.conn.commit()
         if self.conn:
@@ -416,8 +421,8 @@ class Ui_MainWindow(object):
             elif mode == 2:
                 self.import_stats()
 
-    def import_player(self):
-        # TODO: midseason importing
+    def import_player(self, midseason=0):
+        # midseason = import new players w/o overwriting existing players' values
         # import player
         playerfile = QFileDialog.getOpenFileName(MainWindow, 'Choose Player Import File')
         if playerfile[0]:
@@ -427,7 +432,10 @@ class Ui_MainWindow(object):
             if choose_year_window.exec_():
                 year_val = str(choose_year_window.ui.choose_year_spinbox.value()) + ';'
                 player_attlist = ehm.get_attimport_list(playerfile[0], 'playeratt_import.csv', year_val)
-                ehm.import_player(self.conn, player_attlist)
+                if not midseason:
+                    ehm.import_player(self.conn, player_attlist)
+                else:
+                    ehm.import_player(self.conn, player_attlist, 1)
                 self.conn.commit()
                 self.check_conn()
                 self.show_playertable(self.conn)
@@ -488,6 +496,8 @@ class Ui_MainWindow(object):
                 self.show_regbasicstats(self.conn)
 
     def setup_filter(self, conn):
+        if self.filter_status:
+            self.clear_filter(conn, 1)
         filter_window = QtWidgets.QDialog()
         filter_window.ui = filter_Form()
         filter_window.ui.setupUi(filter_window)
@@ -640,8 +650,6 @@ class Ui_MainWindow(object):
                 if 'g' in condition_list:
                     g_statement = "positions LIKE '%g%'"
                     statement += g_statement
-                    # cond_count -= 1
-                    # statement = eval_cond_count(cond_count, statement)
                 statement += ';'
                 dbcfg.create_filter_result(conn)
                 c = conn.cursor()
@@ -652,9 +660,8 @@ class Ui_MainWindow(object):
                 conn.commit()
                 self.filter_status = 1
                 self.show_playertable(conn, 1)
-                # TODO: create 'edit filter' function - snapshot of current filter in filter window
 
-    def clear_filter(self, conn):
+    def clear_filter(self, conn, mode=0):
         ehm.del_filter_playertableview(conn)
         ehm.del_filter_attview(conn)
         ehm.del_filter_techattdisplay(conn)
@@ -668,7 +675,52 @@ class Ui_MainWindow(object):
         ehm.del_filter_poffgoaliestatdisplay(conn)
         dbcfg.drop_filter_result(conn)
         self.filter_status = 0
-        self.show_playertable(conn)
+        if not mode:
+            self.show_playertable(conn)
+
+    def create_graph(self, conn):
+        # TODO: graphing
+        table_select_popup = QtWidgets.QDialog()
+        table_select_popup.ui = table_select_Form()
+        table_select_popup.ui.setupUi(table_select_popup)
+        table_select_popup.ui.comboBox.addItems(self.viewlist)
+        if table_select_popup.exec_():
+            table_select = table_select_popup.ui.comboBox.currentText()
+            column_count = self.view_info[table_select]
+            print(column_count)
+            filtval = 0
+            if self.filter_status:
+                filtval = 1
+            if table_select == 'Attributes':
+                self.show_attributetable(conn, filtval)
+            elif table_select == 'Technical Attributes':
+                self.show_techattributetable(conn, filtval)
+            elif table_select == 'Mental Attributes':
+                self.show_mentattributetable(conn, filtval)
+            elif table_select == 'Physical Attributes':
+                self.show_physattributetable(conn, filtval)
+            elif table_select == 'Skater Reg Season Basic Stats':
+                self.show_regbasicstats(conn, filtval)
+            elif table_select == 'Skater Reg Season Advanced Stats':
+                self.show_regadvstats(conn, filtval)
+            elif table_select == 'Goalie Reg Season Stats':
+                self.show_reggoalstats(conn, filtval)
+            elif table_select == 'Skater Playoff Basic Stats':
+                self.show_poffbasicstats(conn, filtval)
+            elif table_select == 'Skater Playoff Advanced Stats':
+                self.show_poffadvstats(conn, filtval)
+            elif table_select == 'Goalie Playoff Stats':
+                self.show_poffgoalstats(conn, filtval)
+            # row_select_popup = QtWidgets.QDialog()
+            # row_select_popup.ui = row_select_Form()
+            # row_select_popup.ui.setupUi(row_select_popup)
+            # row_select_popup.ui.row_select_buttonbox.accepted.connect(lambda: self.select_rows(conn, column_count))
+            # if row_select_popup.exec_():
+            #     print(self.rowdata)
+
+    def select_rows(self, conn, columns):
+        for column in range(columns):
+            self.rowdata.append(self.database_display.item(self.database_display.currentRow(), column).text())
 
     def show_playertable(self, conn, filt=0):
         if conn:
