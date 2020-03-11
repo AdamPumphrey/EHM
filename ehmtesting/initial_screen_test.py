@@ -12,6 +12,7 @@ import stats_csv as stats
 import database_config as dbcfg
 import sys
 import os
+import math
 from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
@@ -20,7 +21,7 @@ from choose_import import Ui_import_type_dialog as imp_Form
 from choose_year import Ui_choose_year_dialog as year_Form
 from choose_team import Ui_choose_team_dialog as team_Form
 from filter import Ui_filter_dialog as filter_Form
-from select_table import  Ui_table_select_dialog as table_select_Form
+from select_table import Ui_table_select_dialog as table_select_Form
 from select_rows import Ui_row_select_dialog as row_select_Form
 
 
@@ -84,14 +85,15 @@ class Ui_MainWindow(object):
         self.goaliestat_headers = ['Year', 'Name', 'Team', 'League', 'Age', 'GP', 'W', 'L', 'T', 'SHA', 'GA', 'GAA',
                                    'SV%', 'SO', 'MP']
         self.filter_status = 0
+        self.column_count = 0
         self.view_info = {'Attributes': 38, 'Technical Attributes': 18, 'Mental Attributes': 15,
                           'Physical Attributes': 12, 'Skater Reg Season Basic Stats': 17,
                           'Skater Reg Season Advanced Stats': 24, 'Goalie Reg Season Stats': 15,
                           'Skater Playoff Basic Stats': 17, 'Skater Playoff Advanced Stats': 24,
                           'Goalie Playoff Stats': 15}
-        self.viewlist = ['Attributes', 'Technical Attributes', 'Mental Attributes', 'Physical Attributes',
-                         'Skater Reg Season Basic Stats', 'Skater Reg Season Advanced Stats', 'Goalie Reg Season Stats',
-                         'Skater Playoff Basic Stats', 'Skater Playoff Advanced Stats', 'Goalie Playoff Stats']
+        # self.viewlist = ['Attributes', 'Technical Attributes', 'Mental Attributes', 'Physical Attributes',
+        #                  'Skater Reg Season Basic Stats', 'Skater Reg Season Advanced Stats', 'Goalie Reg Season Stats',
+        #                  'Skater Playoff Basic Stats', 'Skater Playoff Advanced Stats', 'Goalie Playoff Stats']
         self.rowdata = []
 
     def setupUi(self, MainWindow):
@@ -306,7 +308,7 @@ class Ui_MainWindow(object):
         self.actionImport_Stats.triggered.connect(lambda: self.import_file(mode=2))
         self.actionSetFilter.triggered.connect(lambda: self.setup_filter(self.conn))
         self.actionClearFilter.triggered.connect(lambda: self.clear_filter(self.conn))
-        self.actionGraph_Data.triggered.connect(lambda: self.create_graph(self.conn))
+        self.actionGraph_Data.triggered.connect(lambda: self.create_graph())
 
     def check_conn(self):
         if not self.conn_status:
@@ -326,7 +328,10 @@ class Ui_MainWindow(object):
             self.actionLoad_db.setDisabled(True)
             self.menuView.setDisabled(False)
             self.menuFilter.setDisabled(False)
-            self.menuGraph.setDisabled(False)
+            if self.column_count is None:
+                self.menuGraph.setDisabled(True)
+            else:
+                self.menuGraph.setDisabled(False)
 
     def create_db(self):
         if self.conn_status:
@@ -391,9 +396,9 @@ class Ui_MainWindow(object):
             if filename[0]:
                 self.db_name = filename[0]
                 self.conn = ehm.connection(filename[0])
-                self.show_playertable(self.conn)
                 self.conn_status = True
-                self.check_conn()
+                self.show_playertable(self.conn)
+                # self.check_conn()
 
     def import_file(self, mode=0):
         if not self.conn:
@@ -678,49 +683,62 @@ class Ui_MainWindow(object):
         if not mode:
             self.show_playertable(conn)
 
-    def create_graph(self, conn):
+    def create_graph(self):
         # TODO: graphing
-        table_select_popup = QtWidgets.QDialog()
-        table_select_popup.ui = table_select_Form()
-        table_select_popup.ui.setupUi(table_select_popup)
-        table_select_popup.ui.comboBox.addItems(self.viewlist)
-        if table_select_popup.exec_():
-            table_select = table_select_popup.ui.comboBox.currentText()
-            column_count = self.view_info[table_select]
-            print(column_count)
-            filtval = 0
-            if self.filter_status:
-                filtval = 1
-            if table_select == 'Attributes':
-                self.show_attributetable(conn, filtval)
-            elif table_select == 'Technical Attributes':
-                self.show_techattributetable(conn, filtval)
-            elif table_select == 'Mental Attributes':
-                self.show_mentattributetable(conn, filtval)
-            elif table_select == 'Physical Attributes':
-                self.show_physattributetable(conn, filtval)
-            elif table_select == 'Skater Reg Season Basic Stats':
-                self.show_regbasicstats(conn, filtval)
-            elif table_select == 'Skater Reg Season Advanced Stats':
-                self.show_regadvstats(conn, filtval)
-            elif table_select == 'Goalie Reg Season Stats':
-                self.show_reggoalstats(conn, filtval)
-            elif table_select == 'Skater Playoff Basic Stats':
-                self.show_poffbasicstats(conn, filtval)
-            elif table_select == 'Skater Playoff Advanced Stats':
-                self.show_poffadvstats(conn, filtval)
-            elif table_select == 'Goalie Playoff Stats':
-                self.show_poffgoalstats(conn, filtval)
-            # row_select_popup = QtWidgets.QDialog()
-            # row_select_popup.ui = row_select_Form()
-            # row_select_popup.ui.setupUi(row_select_popup)
-            # row_select_popup.ui.row_select_buttonbox.accepted.connect(lambda: self.select_rows(conn, column_count))
-            # if row_select_popup.exec_():
-            #     print(self.rowdata)
+        self.rowdata = []
+        self.select_rows(self.column_count)
+        print(self.rowdata)
+        # table_select_popup = QtWidgets.QDialog()
+        # table_select_popup.ui = table_select_Form()
+        # table_select_popup.ui.setupUi(table_select_popup)
+        # table_select_popup.ui.comboBox.addItems(self.viewlist)
+        # if table_select_popup.exec_():
+        #     table_select = table_select_popup.ui.comboBox.currentText()
+        #     column_count = self.view_info[table_select]
+        #     print(column_count)
+        #     filtval = 0
+        #     if self.filter_status:
+        #         filtval = 1
+        #     if table_select == 'Attributes':
+        #         self.show_attributetable(conn, filtval)
+        #     elif table_select == 'Technical Attributes':
+        #         self.show_techattributetable(conn, filtval)
+        #     elif table_select == 'Mental Attributes':
+        #         self.show_mentattributetable(conn, filtval)
+        #     elif table_select == 'Physical Attributes':
+        #         self.show_physattributetable(conn, filtval)
+        #     elif table_select == 'Skater Reg Season Basic Stats':
+        #         self.show_regbasicstats(conn, filtval)
+        #     elif table_select == 'Skater Reg Season Advanced Stats':
+        #         self.show_regadvstats(conn, filtval)
+        #     elif table_select == 'Goalie Reg Season Stats':
+        #         self.show_reggoalstats(conn, filtval)
+        #     elif table_select == 'Skater Playoff Basic Stats':
+        #         self.show_poffbasicstats(conn, filtval)
+        #     elif table_select == 'Skater Playoff Advanced Stats':
+        #         self.show_poffadvstats(conn, filtval)
+        #     elif table_select == 'Goalie Playoff Stats':
+        #         self.show_poffgoalstats(conn, filtval)
+        # row_select_popup = QtWidgets.QDialog()
+        # row_select_popup.ui = row_select_Form()
+        # row_select_popup.ui.setupUi(row_select_popup)
+        # row_select_popup.ui.row_select_buttonbox.accepted.connect(lambda: self.select_rows(conn, column_count))
+        # if row_select_popup.exec_():
+        #     print(self.rowdata)
 
-    def select_rows(self, conn, columns):
-        for column in range(columns):
-            self.rowdata.append(self.database_display.item(self.database_display.currentRow(), column).text())
+    def select_rows(self, columns):
+        selected_items = self.database_display.selectedIndexes()
+        list_number = 0
+        count = 0
+        list_count = math.ceil(len(selected_items)/columns)
+        for x in range(0, list_count):
+            self.rowdata.append([])
+        for item in selected_items:
+            if count >= columns:
+                count = 0
+                list_number += 1
+            self.rowdata[list_number].append(self.database_display.item(item.row(), item.column()).text())
+            count += 1
 
     def show_playertable(self, conn, filt=0):
         if conn:
@@ -737,6 +755,8 @@ class Ui_MainWindow(object):
                 for column_number, data in enumerate(row_data):
                     self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = None
+            self.check_conn()
 
     def show_attributetable(self, conn, filt=0):
         if conn:
@@ -756,6 +776,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Attributes']
+            self.check_conn()
 
     def show_techattributetable(self, conn, filt=0):
         if conn:
@@ -775,6 +797,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Technical Attributes']
+            self.check_conn()
 
     def show_mentattributetable(self, conn, filt=0):
         if conn:
@@ -794,6 +818,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Mental Attributes']
+            self.check_conn()
 
     def show_physattributetable(self, conn, filt=0):
         if conn:
@@ -813,6 +839,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Physical Attributes']
+            self.check_conn()
 
     def show_regbasicstats(self, conn, filt=0):
         if conn:
@@ -832,6 +860,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Skater Reg Season Basic Stats']
+            self.check_conn()
 
     def show_regadvstats(self, conn, filt=0):
         if conn:
@@ -851,6 +881,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Skater Reg Season Advanced Stats']
+            self.check_conn()
 
     def show_reggoalstats(self, conn, filt=0):
         if conn:
@@ -870,6 +902,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Goalie Reg Season Stats']
+            self.check_conn()
 
     def show_poffbasicstats(self, conn, filt=0):
         if conn:
@@ -889,6 +923,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Skater Playoff Basic Stats']
+            self.check_conn()
 
     def show_poffadvstats(self, conn, filt=0):
         if conn:
@@ -908,6 +944,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Skater Playoff Advanced Stats']
+            self.check_conn()
 
     def show_poffgoalstats(self, conn, filt=0):
         if conn:
@@ -927,6 +965,8 @@ class Ui_MainWindow(object):
                     else:
                         self.database_display.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.database_display.setSortingEnabled(True)
+            self.column_count = self.view_info['Goalie Playoff Stats']
+            self.check_conn()
 
     def exit_db(self):
         # if self.conn_status:
